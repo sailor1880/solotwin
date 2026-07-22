@@ -700,6 +700,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <div style="font-size:12px;margin-bottom:2px"><b>SOLO/TWIN courses</b>
    <button id="allcourses" style="font-size:11px">all on</button>
    <button id="nocourses" style="font-size:11px">all off</button></div>
+ <label style="font-size:12px"><input type="checkbox" id="revchk"> Reverse direction (SI 6.3)</label>
  <div id="list"></div>
  <label class="ez"><input type="checkbox" id="ezchk" checked> Cox Ledge Exclusion Zone</label>
  <label class="fin"><input type="checkbox" id="finchk" checked> Finish line (120&deg;/300&deg;)</label>
@@ -2013,11 +2014,22 @@ document.getElementById('coopschk').addEventListener('change',async e=>{
 // ---- Courses ----
 const courseLayers = {};
 const bounds = [];
+const isRev=()=>document.getElementById('revchk').checked;
+function courseSeq(c){                 // reverse = same start/finish, middle marks in opposite order (SI 6.3)
+  if(!isRev() || c.seq.length<3) return c.seq;
+  return [c.seq[0], ...c.seq.slice(1,-1).reverse(), c.seq[c.seq.length-1]];
+}
+function coursePopup(c){ const s=courseSeq(c);
+  return `<b>Course ${c.code} &mdash; ${c.dist}${isRev()?' (reversed)':''}</b><br>${s.join(' → ')}<br>`+
+         (isRev()?'':`Rounding: ${c.rounding}<br>`)+`Computed length: ${c.calc} NM`; }
 D.courses.forEach(c=>{
-  const pts = c.seq.map(m=>{const k=D.marks[m];bounds.push([k.lat,k.lon]);return [k.lat,k.lon];});
-  courseLayers[c.code] = L.polyline(pts,{color:c.color,weight:3,opacity:.9})
-     .bindPopup(`<b>Course ${c.code} &mdash; ${c.dist}</b><br>${c.seq.join(' → ')}<br>Rounding: ${c.rounding}<br>Computed length: ${c.calc} NM`);
+  c.seq.forEach(m=>{const k=D.marks[m];bounds.push([k.lat,k.lon]);});
+  courseLayers[c.code] = L.polyline(courseSeq(c).map(m=>{const k=D.marks[m];return [k.lat,k.lon];}),
+     {color:c.color,weight:3,opacity:.9}).bindPopup(coursePopup(c));
 });
+function redrawCourses(){ D.courses.forEach(c=>{
+  courseLayers[c.code].setLatLngs(courseSeq(c).map(m=>{const k=D.marks[m];return [k.lat,k.lon];}));
+  courseLayers[c.code].setPopupContent(coursePopup(c)); }); }
 
 // ---- Exclusion zone ----
 const ezpts = D.ez.map(e=>[e.lat,e.lon]);
@@ -2066,6 +2078,7 @@ D.courses.forEach(c=>{
     e.target.checked?courseLayers[c.code].addTo(map):map.removeLayer(courseLayers[c.code]);
   });
 });
+document.getElementById('revchk').addEventListener('change',redrawCourses);
 ezLayer.addTo(map); finLayer.addTo(map); markLayer.addTo(map);
 const tog=(id,layer)=>document.getElementById(id).addEventListener('change',e=>{e.target.checked?layer.addTo(map):map.removeLayer(layer);});
 tog('ezchk',ezLayer); tog('finchk',finLayer); tog('skchk',seamark); tog('mkchk',markLayer);
@@ -2099,12 +2112,22 @@ document.getElementById('clrtrack').onclick=()=>{ if(!confirm('Erase the recorde
 // ---- Draw a route by tapping the map ----
 const routeMarks=L.layerGroup().addTo(map);
 function addRoutePoint(ll){ routePts.push(ll); drawRoute(); }
+function wpIcon(){ return L.divIcon({className:'',iconSize:[18,18],iconAnchor:[9,9],
+  html:'<div style="width:14px;height:14px;border-radius:50%;background:#fff;border:3px solid #0a7d2c;box-shadow:0 0 2px rgba(0,0,0,.6)"></div>'}); }
+function routeInfo(){ let d=0; for(let i=1;i<routePts.length;i++) d+=map.distance(routePts[i-1],routePts[i]);
+  document.getElementById('routeinfo').textContent = routePts.length
+    ? routePts.length+' pts · '+(d/1852).toFixed(2)+' NM'+(routePts.length>1?'  (drag dots; tap to delete)':'') : ''; }
+window.removeWp=function(i){ routePts.splice(i,1); drawRoute(); };
 function drawRoute(){
   if(!routeLine) routeLine=L.polyline([],{color:'#0a7d2c',weight:3,dashArray:'6 4'}).addTo(map);
   routeLine.setLatLngs(routePts); routeMarks.clearLayers();
-  routePts.forEach(p=>L.circleMarker(p,{radius:4,color:'#0a7d2c',fillColor:'#fff',fillOpacity:1,weight:2}).addTo(routeMarks));
-  let d=0; for(let i=1;i<routePts.length;i++) d+=map.distance(routePts[i-1],routePts[i]);
-  document.getElementById('routeinfo').textContent = routePts.length? routePts.length+' pts · '+(d/1852).toFixed(2)+' NM' : '';
+  routePts.forEach((p,i)=>{
+    const m=L.marker(p,{icon:wpIcon(),draggable:true,keyboard:false,zIndexOffset:500}).addTo(routeMarks);
+    const upd=ev=>{ routePts[i]=ev.target.getLatLng(); routeLine.setLatLngs(routePts); routeInfo(); };
+    m.on('drag',upd); m.on('dragend',upd);
+    m.bindPopup('Waypoint '+(i+1)+'<br><a href="#" onclick="removeWp('+i+');return false;">Delete point</a>');
+  });
+  routeInfo();
 }
 document.getElementById('drawchk').addEventListener('change',e=>{ drawMode=e.target.checked;
   map.getContainer().style.cursor=drawMode?'crosshair':''; });
