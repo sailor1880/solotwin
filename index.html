@@ -721,7 +721,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <hr><b style="font-size:12px">Tracking</b>
  <label><input type="checkbox" id="gpschk"> My position (boat) &#9973;</label>
  <label style="margin-left:18px;font-size:12px"><input type="checkbox" id="followchk" checked> keep centered</label>
- <label><input type="checkbox" id="coopschk"> Tidal current stations (NOAA)</label>
+ <label><input type="checkbox" id="coopschk"> Tidal currents (NOAA, tide-based)</label>
  <hr><b style="font-size:12px">Track &amp; route</b>
  <label><input type="checkbox" id="recchk"> Record my GPS track</label>
  <label><input type="checkbox" id="drawchk"> Draw a route (tap map)</label>
@@ -1815,8 +1815,9 @@ function arrow(deg,color){            // arrow points UP by default -> rotate to
 }
 const spdColor=s=> s<8?'#2c7fb8': s<16?'#41ab5d': s<22?'#f0a020':'#e6194b';
 const hour=()=>+document.getElementById('thr').value;
-function setWhen(){ if(TIMES) document.getElementById('when').textContent=
-   'Fcst: '+TIMES[hour()].replace('T',' ')+'Z'; }
+function setWhen(){ const el=document.getElementById('when'); if(!el) return;
+  const t=(typeof TIMES!=='undefined'&&TIMES)? new Date(Date.parse(TIMES[hour()]+'Z')) : new Date(Date.now()+hour()*3600000);
+  el.textContent='Fcst: '+t.toISOString().slice(0,16).replace('T',' ')+'Z'; }
 
 async function loadWind(){
   const u='https://api.open-meteo.com/v1/forecast?latitude='+latCSV+'&longitude='+lonCSV+
@@ -1842,7 +1843,8 @@ function drawCur(){ curLayer.clearLayers(); const h=hour();
       .bindTooltip(kn.toFixed(1)+' kt set',{direction:'top'}).addTo(curLayer); }); }
 
 const flowOn=()=>document.getElementById('flowchk').checked;
-function showTbox(){ document.getElementById('tbox').style.display=(windOn()||curOn()||flowOn())?'block':'none'; }
+function showTbox(){ document.getElementById('tbox').style.display=
+  (windOn()||curOn()||flowOn()||document.getElementById('coopschk').checked)?'block':'none'; }
 async function refreshWx(){           // rebuild grid for current view + refetch active layers
   buildGrid();
   try{ if(windOn()){ await loadWind(); drawWind(); } }catch(e){}
@@ -1863,7 +1865,8 @@ document.getElementById('curchk').addEventListener('change',async e=>{
   else map.removeLayer(curLayer); showTbox(); });
 document.getElementById('thr').addEventListener('input',()=>{ setWhen();
   if(windOn()&&WIND) drawWind(); if(curOn()&&CUR) drawCur();
-  if(flowOn()&&flowLayer&&WINDFLO) flowLayer.setData(flowData(hour())); });
+  if(flowOn()&&flowLayer&&WINDFLO) flowLayer.setData(flowData(hour()));
+  if(document.getElementById('coopschk').checked&&coopsLoaded) drawCoopsArrows(); });
 
 // ---- Animated wind flow on the ENC (leaflet-velocity + Open-Meteo, keyless) ----
 const FLO={la1:41.65,la2:40.45,lo1:-71.80,lo2:-70.60,dx:0.08,dy:0.08};
@@ -1978,38 +1981,60 @@ document.getElementById('gpschk').addEventListener('change',e=>{
   }
 });
 
-// ---- NOAA CO-OPS tidal current prediction stations (keyless) ----
-const coopsLayer=L.layerGroup(); let coopsLoaded=false;
+// ---- NOAA CO-OPS predicted tidal currents: bay stations + arrows tied to the time slider ----
+const coopsLayer=L.layerGroup(), coopsArrows=L.layerGroup();
+let coopsLoaded=false, coopsStations=[];
+const coopsOn=()=>document.getElementById('coopschk').checked;
+const curColor=s=> s<0.5?'#00b4d8': s<1?'#0077b6': s<2?'#7b2cbf':'#e6194b';
+function targetMs(){ return (typeof TIMES!=='undefined'&&TIMES)?Date.parse(TIMES[hour()]+'Z'):(Date.now()+hour()*3600000); }
+function ymd(d){ return ''+d.getUTCFullYear()+String(d.getUTCMonth()+1).padStart(2,'0')+String(d.getUTCDate()).padStart(2,'0'); }
 async function loadCoops(){
   const u='https://api.tidesandcurrents.noaa.gov/mdapi/prod/webapi/stations.json?type=currentpredictions';
   const j=await (await fetch(u)).json();
-  (j.stations||[]).filter(s=>s.lat>40.55&&s.lat<41.65&&s.lng>-71.8&&s.lng<-70.6).forEach(s=>{
-    const m=L.circleMarker([s.lat,s.lng],{radius:5,color:'#023e8a',weight:1.5,fillColor:'#48cae4',fillOpacity:1})
-      .bindTooltip(s.name,{direction:'top'});
-    m.on('click',()=>{
-      const link='https://tidesandcurrents.noaa.gov/noaacurrents/Predictions?id='+s.id;
-      m.bindPopup('<b>'+s.name+'</b><br>Station '+s.id+
-        '<br><a href="'+link+'" target="_blank">NOAA current predictions &#8599;</a>'+
-        '<br><span id="cp_'+s.id+'">loading today’s flood/ebb…</span>').openPopup();
-      const du='https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?date=today&station='+s.id+
-        '&product=currents_predictions&time_zone=lst_ldt&interval=MAX_SLACK&units=english&format=json&application=solotwin';
-      fetch(du).then(r=>r.json()).then(d=>{
-        const cp=(d.current_predictions&&(d.current_predictions.cp||d.current_predictions.CP))||[];
-        const el=document.getElementById('cp_'+s.id); if(!el) return;
-        el.innerHTML= cp.length? cp.slice(0,6).map(x=>
-          (x.Time||'').slice(11,16)+' '+(x.Type||'')+' '+
-          (x.Velocity_Major!=null? Math.abs(x.Velocity_Major).toFixed(1)+' kt':'')).join('<br>')
-          : '(tap link above for predictions)';
-      }).catch(()=>{const el=document.getElementById('cp_'+s.id); if(el) el.textContent='(tap link above)';});
-    });
-    m.addTo(coopsLayer);
+  coopsStations=(j.stations||[]).filter(s=>s.lat>41.28&&s.lat<41.80&&s.lng>-71.50&&s.lng<-71.10).slice(0,30);
+  coopsStations.forEach(s=>{
+    s.marker=L.circleMarker([s.lat,s.lng],{radius:4,color:'#023e8a',weight:1,fillColor:'#90e0ef',fillOpacity:1})
+      .bindTooltip(s.name,{direction:'top'})
+      .on('click',function(){ this.bindPopup('<b>'+s.name+'</b><br>Station '+s.id+
+        '<br><a href="https://tidesandcurrents.noaa.gov/noaacurrents/Predictions?id='+s.id+'" target="_blank">Full NOAA predictions &#8599;</a>').openPopup(); });
+    s.marker.addTo(coopsLayer);
   });
-  coopsLoaded=true;
+  coopsLoaded=true; loadCoopsPreds();
+}
+function loadCoopsPreds(){       // MAX_SLACK events (only series NOAA publishes); we interpolate between them
+  const b=ymd(new Date()), e=ymd(new Date(Date.now()+2*86400000));
+  coopsStations.forEach(s=>{ if(s.series) return;
+    const du='https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?product=currents_predictions'+
+      '&application=sailingassistant&begin_date='+b+'&end_date='+e+'&station='+s.id+
+      '&time_zone=gmt&interval=MAX_SLACK&units=english&format=json';
+    fetch(du).then(r=>r.json()).then(d=>{
+      const cp=(d.current_predictions&&(d.current_predictions.cp||d.current_predictions.CP))||[];
+      s.series=cp.map(x=>({t:Date.parse((x.Time||'').replace(' ','T')+'Z'),v:+x.Velocity_Major,
+        fd:+x.meanFloodDir,ed:+x.meanEbbDir})).filter(o=>!isNaN(o.t)&&!isNaN(o.v))
+        .sort((a,b2)=>a.t-b2.t);
+      if(coopsOn()) drawCoopsArrows();
+    }).catch(()=>{});
+  });
+}
+function curAt(sr,tgt){          // cosine-interpolate signed velocity between slack/max events
+  if(!sr.length) return null;
+  if(tgt<=sr[0].t) return sr[0]; if(tgt>=sr[sr.length-1].t) return sr[sr.length-1];
+  let i=1; while(i<sr.length && sr[i].t<tgt) i++;
+  const a=sr[i-1], b=sr[i], f=(tgt-a.t)/(b.t-a.t);
+  return {v:a.v+(b.v-a.v)*(1-Math.cos(f*Math.PI))/2, fd:a.fd, ed:a.ed};
+}
+function drawCoopsArrows(){ coopsArrows.clearLayers(); const tgt=targetMs();
+  coopsStations.forEach(s=>{ if(!s.series||!s.series.length) return;
+    const c=curAt(s.series,tgt); if(!c) return;
+    const spd=Math.abs(c.v), dir=(c.v>=0?c.fd:c.ed); if(isNaN(dir)||spd<0.1) return;
+    L.marker([s.lat,s.lng],{icon:arrow(dir,curColor(spd)),keyboard:false})
+      .bindTooltip(spd.toFixed(1)+' kt '+(c.v>=0?'flood':'ebb'),{direction:'top'}).addTo(coopsArrows); });
 }
 document.getElementById('coopschk').addEventListener('change',async e=>{
-  if(e.target.checked){ try{ if(!coopsLoaded) await loadCoops(); coopsLayer.addTo(map);}
+  if(e.target.checked){ try{ if(!coopsLoaded) await loadCoops(); coopsLayer.addTo(map); coopsArrows.addTo(map);
+      drawCoopsArrows(); showTbox(); }
     catch(err){ alert('Could not load NOAA stations: '+err); e.target.checked=false; } }
-  else map.removeLayer(coopsLayer);
+  else { map.removeLayer(coopsLayer); map.removeLayer(coopsArrows); showTbox(); }
 });
 
 // ---- Courses ----
