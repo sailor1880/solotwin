@@ -2160,12 +2160,15 @@ function drawRoute(){
   routeLine.setLatLngs(routePts); routeMarks.clearLayers();
   routePts.forEach((p,i)=>{
     const m=L.marker(p,{icon:wpIcon(),draggable:true,keyboard:false,zIndexOffset:500}).addTo(routeMarks);
-    const upd=ev=>{ routePts[i]=ev.target.getLatLng(); routeLine.setLatLngs(routePts); routeInfo(); };
+    const upd=ev=>{ routePts[i]=ev.target.getLatLng(); routeLine.setLatLngs(routePts); routeInfo(); saveRoute(); };
     m.on('drag',upd); m.on('dragend',upd);
     m.bindPopup('Waypoint '+(i+1)+'<br><a href="#" onclick="removeWp('+i+');return false;">Delete point</a>');
   });
-  routeInfo();
+  routeInfo(); saveRoute();
 }
+function saveRoute(){ try{ localStorage.setItem('sa_route', JSON.stringify(routePts.map(p=>[p.lat,p.lng]))); }catch(e){} }
+(function(){ try{ const r=JSON.parse(localStorage.getItem('sa_route')||'[]');
+  if(r.length){ routePts=r.map(p=>L.latLng(p[0],p[1])); drawRoute(); } }catch(e){} })();
 function eachClickable(fn){                 // interactive overlays that would otherwise grab taps
   Object.values(courseLayers).forEach(fn); markLayer.eachLayer(fn); fn(ezLayer); fn(finLayer);
   if(typeof races!=='undefined') races.forEach(r=>{ r.routes.forEach(rt=>fn(rt.layer)); r.extra.forEach(fn); });
