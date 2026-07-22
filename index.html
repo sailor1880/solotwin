@@ -758,7 +758,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <label><input type="checkbox" id="raceschk" checked> Show added races</label>
  <div id="racelist" style="font-size:11px;color:#555"></div>
  <button id="clrgpx" style="font-size:11px;margin-top:2px">Clear added races</button>
- <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. Current arrows are an <b>ocean model, not tidal</b> &mdash; for tidal set/drift use <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-22 19:25</span></div>
+ <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. Current arrows are an <b>ocean model, not tidal</b> &mdash; for tidal set/drift use <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-22 19:26</span></div>
 </div>
 <script>/* @preserve
  * Leaflet 1.9.4, a JS library for interactive maps. https://leafletjs.com
@@ -2353,12 +2353,18 @@ const CLUBS=[
 const clubIcon=L.divIcon({className:'',iconSize:[22,22],iconAnchor:[11,11],
   html:'<div style="color:#1565c0;font-size:20px;line-height:22px;text-align:center;text-shadow:0 0 2px #fff,0 0 3px #fff">★</div>'});
 let clubsLayer=null;
+const clubOv=()=>{ try{ return JSON.parse(localStorage.getItem('sa_cluboverride')||'{}'); }catch(e){ return {}; } };
 document.getElementById('clubschk').addEventListener('change',e=>{
-  if(e.target.checked){ if(!clubsLayer){ clubsLayer=L.layerGroup();
-    CLUBS.forEach(([n,v,p,la,lo])=>{ const tel=p.replace(/[^0-9]/g,'').slice(0,10);
+  if(e.target.checked){ if(!clubsLayer){ clubsLayer=L.layerGroup(); const ov=clubOv();
+    CLUBS.forEach(([n,v,p,la0,lo0])=>{ const o=ov[n]; const la=o?o[0]:la0, lo=o?o[1]:lo0;
+      const tel=p.replace(/[^0-9]/g,'').slice(0,10);
       const vhf=v?'<span style="background:#0b3d66;color:#fff;border-radius:4px;padding:1px 6px;margin-right:5px">VHF '+v+'</span>':'';
-      L.marker([la,lo],{icon:clubIcon}).bindPopup('<b>'+n+'</b><br>'+vhf+'<a href="tel:+1'+tel+'">'+p+'</a>')
-        .bindTooltip(n,{direction:'top'}).addTo(clubsLayer); }); }
+      const mk=L.marker([la,lo],{icon:clubIcon,draggable:true}).bindTooltip(n,{direction:'top'}).addTo(clubsLayer);
+      const pop=()=>{ const ll=mk.getLatLng(); return '<b>'+n+'</b><br>'+vhf+'<a href="tel:+1'+tel+'">'+p+'</a>'+
+        '<br><small>'+ll.lat.toFixed(5)+', '+ll.lng.toFixed(5)+' &mdash; drag to fix</small>'; };
+      mk.bindPopup(pop());
+      mk.on('dragend',()=>{ const ll=mk.getLatLng(); const o2=clubOv(); o2[n]=[+ll.lat.toFixed(5),+ll.lng.toFixed(5)];
+        try{ localStorage.setItem('sa_cluboverride',JSON.stringify(o2)); }catch(e){} mk.setPopupContent(pop()); mk.openPopup(); }); }); }
     clubsLayer.addTo(map); }
   else if(clubsLayer) map.removeLayer(clubsLayer); });
 
