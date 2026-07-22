@@ -720,6 +720,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <div id="mycourses"></div>
  <hr><b style="font-size:12px">Race marks (manual)</b>
  <label style="font-size:12px"><input type="checkbox" id="markmode"> Place mark (tap map, then name it)</label>
+ <label style="font-size:12px"><input type="checkbox" id="coordmode"> Tap map for coordinates</label>
  <div id="mymarks" style="font-size:11px"></div>
  <button id="clrmarks" style="font-size:11px">Clear my marks</button>
  <hr><b style="font-size:12px">Weather (live)</b>
@@ -758,7 +759,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <label><input type="checkbox" id="raceschk" checked> Show added races</label>
  <div id="racelist" style="font-size:11px;color:#555"></div>
  <button id="clrgpx" style="font-size:11px;margin-top:2px">Clear added races</button>
- <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. Current arrows are an <b>ocean model, not tidal</b> &mdash; for tidal set/drift use <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-22 19:35</span></div>
+ <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. Current arrows are an <b>ocean model, not tidal</b> &mdash; for tidal set/drift use <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-22 19:38</span></div>
 </div>
 <script>/* @preserve
  * Leaflet 1.9.4, a JS library for interactive maps. https://leafletjs.com
@@ -1776,9 +1777,12 @@ const map = L.map('map',{center:[41.1,-71.3],zoom:9});
 const panelEl=document.getElementById('panel'), collapseEl=document.getElementById('collapse');
 function setPanel(hidden){ panelEl.classList.toggle('hidden',hidden); collapseEl.style.display=hidden?'block':'none'; }
 collapseEl.addEventListener('click',()=>setPanel(false));
-let drawMode=false, markMode=false, routePts=[], routeLine=null;
-map.on('click',e=>{ if(markMode){ placeMark(e.latlng); return; }
-  if(drawMode){ addRoutePoint(e.latlng); return; } setPanel(true); });  // place mark / add route pt / hide menu
+let drawMode=false, markMode=false, coordMode=false, routePts=[], routeLine=null;
+function showCoord(ll){ const s=ll.lat.toFixed(6)+', '+ll.lng.toFixed(6);
+  L.popup().setLatLng(ll).setContent('<b>'+s+'</b><br><a href="#" onclick="navigator.clipboard&&navigator.clipboard.writeText(\''+s+'\');this.textContent=\'\\u2713 copied\';return false;">copy</a>').openOn(map); }
+map.on('click',e=>{ if(coordMode){ showCoord(e.latlng); return; }
+  if(markMode){ placeMark(e.latlng); return; }
+  if(drawMode){ addRoutePoint(e.latlng); return; } setPanel(true); });  // coord / place mark / route pt / hide menu
 
 // ---- Esri dynamic MapServer as tiles (renders all visible layers via /export) ----
 function esriExportLayer(base, attr){
@@ -2226,7 +2230,7 @@ function eachClickable(fn){                 // interactive overlays that would o
 function setDrawPassthrough(on){ map.closePopup();      // draw mode -> taps fall through to the map
   eachClickable(l=>{ const el=l&&(l._path||l._icon); if(el) el.style.pointerEvents=on?'none':''; }); }
 document.getElementById('drawchk').addEventListener('change',e=>{ drawMode=e.target.checked;
-  map.getContainer().style.cursor=(drawMode||markMode)?'crosshair':''; setDrawPassthrough(drawMode||markMode); });
+  map.getContainer().style.cursor=anyTapMode()?'crosshair':''; setDrawPassthrough(anyTapMode()); });
 document.getElementById('undobtn').onclick =()=>{ routePts.pop(); drawRoute(); };
 document.getElementById('clrroute').onclick=()=>{ routePts=[]; drawRoute(); };
 
@@ -2312,8 +2316,11 @@ function renderMyMarks(){ const box=document.getElementById('mymarks'); box.inne
 function placeMark(ll){ const dflt=String.fromCharCode(65+(myMarks.length%26));
   const name=prompt('Mark name/letter:', dflt); if(name===null) return;
   myMarks.push({name:name||dflt, lat:+ll.lat.toFixed(5), lon:+ll.lng.toFixed(5)}); drawMyMarks(); renderMyMarks(); persistMarks(); }
+function anyTapMode(){ return drawMode||markMode||coordMode; }
 document.getElementById('markmode').addEventListener('change',e=>{ markMode=e.target.checked;
-  map.getContainer().style.cursor=(drawMode||markMode)?'crosshair':''; setDrawPassthrough(drawMode||markMode); });
+  map.getContainer().style.cursor=anyTapMode()?'crosshair':''; setDrawPassthrough(anyTapMode()); });
+document.getElementById('coordmode').addEventListener('change',e=>{ coordMode=e.target.checked;
+  map.getContainer().style.cursor=anyTapMode()?'crosshair':''; setDrawPassthrough(anyTapMode()); });
 document.getElementById('clrmarks').onclick=()=>{ if(!myMarks.length) return; if(!confirm('Clear all your manually-placed marks?')) return;
   myMarks=[]; drawMyMarks(); renderMyMarks(); persistMarks(); };
 (function(){ try{ myMarks=JSON.parse(localStorage.getItem(MMKEY)||'[]'); }catch(e){ myMarks=[]; } drawMyMarks(); renderMyMarks(); })();
