@@ -759,7 +759,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <label><input type="checkbox" id="raceschk" checked> Show added races</label>
  <div id="racelist" style="font-size:11px;color:#555"></div>
  <button id="clrgpx" style="font-size:11px;margin-top:2px">Clear added races</button>
- <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. Current arrows are an <b>ocean model, not tidal</b> &mdash; for tidal set/drift use <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-22 19:41</span></div>
+ <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. Current arrows are an <b>ocean model, not tidal</b> &mdash; for tidal set/drift use <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-22 19:45</span></div>
 </div>
 <script>/* @preserve
  * Leaflet 1.9.4, a JS library for interactive maps. https://leafletjs.com
@@ -2340,24 +2340,24 @@ document.getElementById('sbchk').addEventListener('change',async e=>{
 
 // ---- Clubs & services: blue-star waypoints, popup = name / VHF / tap-to-call phone (positions approx) ----
 const CLUBS=[
-["Coasters Harbor Navy YC","09","(401) 841-3283",41.5075,-71.3260],
-["Conanicut YC","72","(401) 423-1424",41.50600,-71.36200],
-["Ida Lewis YC","78A","(401) 846-1969",41.4782,-71.3268],
+["Coasters Harbor Navy YC","09","(401) 841-3283",41.50884,-71.3275],
+["Conanicut YC","72","(401) 423-1424",41.50258,-71.36266],
+["Ida Lewis YC","78A","(401) 846-1969",41.47796,-71.32597],
 ["Jamestown–Newport Ferry","","(401) 423-9900",41.5027,-71.3658],
 ["Jamestown YC","72","(401) 782-7271",41.50270,-71.36500],
 ["Conanicut Marine Services","71","(401) 423-7158",41.5028,-71.3653],
-["Newport YC","78A","(401) 846-9410",41.4890,-71.3178],
-["New York YC (Harbour Court)","74","(401) 846-1000",41.4815,-71.3235],
+["Newport YC","78A","(401) 846-9410",41.48874,-71.31905],
+["New York YC (Harbour Court)","74","(401) 846-1000",41.47419,-71.32637],
 ["Newport Harbor Master","16","(401) 845-5815",41.4875,-71.3228],
-["Northeast Marine Pilots Assn.","13","(401) 847-9050 x1",41.4870,-71.3236],
+["Northeast Marine Pilots Assn.","13","(401) 847-9050 x1",41.48471,-71.31322],
 ["Oldport Marine Launch","68","(401) 847-9109",41.48625,-71.31616],
 ["Safe Harbor Newport Shipyard","09","(401) 846-6000",41.49076,-71.32168],
 ["Safe Harbor Jamestown Boatyard","72","(401) 423-0600",41.4975,-71.3685],
 ["Safe Harbor Wickford Cove","09","(401) 884-7014",41.5715,-71.4405],
 ["Safe Harbor New England Boatworks","09","(401) 683-4000",41.59083,-71.28550],
-["Sail Newport (Fort Adams)","09","(401) 849-8385",41.4775,-71.3390],
-["Saunderstown YC","","(401) 295-0080",41.5300,-71.4230],
-["US Coast Guard Stn Castle Hill","16","(401) 846-3675",41.4620,-71.3630]];
+["Sail Newport (Fort Adams)","09","(401) 849-8385",41.47471,-71.33678],
+["Saunderstown YC","","(401) 295-0080",41.50869,-71.41846],
+["US Coast Guard Stn Castle Hill","16","(401) 846-3675",41.46217,-71.35686]];
 const clubIcon=L.divIcon({className:'',iconSize:[22,22],iconAnchor:[11,11],
   html:'<div style="color:#1565c0;font-size:20px;line-height:22px;text-align:center;text-shadow:0 0 2px #fff,0 0 3px #fff">★</div>'});
 let clubsLayer=null;
