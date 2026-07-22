@@ -687,10 +687,12 @@ svg.leaflet-image-layer.leaflet-interactive path {
 </style></head>
 <body>
 <div id="map"></div>
-<div id="windywrap" style="display:none;position:absolute;inset:0;z-index:1200;background:#fff">
-  <button id="windyclose" style="position:absolute;top:10px;left:10px;z-index:1201;font-size:14px;
-    padding:6px 10px;border:none;border-radius:6px;background:#fff;box-shadow:0 1px 5px rgba(0,0,0,.4);cursor:pointer">&#8592; Chart</button>
-  <iframe id="windyframe" style="width:100%;height:100%;border:0" allow="fullscreen"></iframe>
+<div id="windywrap" style="display:none;position:absolute;inset:0;z-index:1200;background:#fff;flex-direction:column">
+  <div style="flex:0 0 46px;background:#0b3d66;display:flex;align-items:center;gap:10px">
+    <button id="windyclose" style="margin-left:10px;font-size:15px;font-weight:bold;padding:9px 16px;border:none;border-radius:7px;background:#fff;color:#0b3d66;cursor:pointer">&#8592; Back to Chart</button>
+    <span style="color:#cfe3f5;font-size:13px">Windy weather &mdash; tap Back to return</span>
+  </div>
+  <iframe id="windyframe" style="flex:1 1 auto;width:100%;border:0" allow="fullscreen"></iframe>
 </div>
 <button id="collapse" title="Show/hide panel">&#9776;</button>
 <div class="panel" id="panel">
@@ -741,7 +743,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <label><input type="checkbox" id="raceschk" checked> Show added races</label>
  <div id="racelist" style="font-size:11px;color:#555"></div>
  <button id="clrgpx" style="font-size:11px;margin-top:2px">Clear added races</button>
- <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. Current arrows are an <b>ocean model, not tidal</b> &mdash; for tidal set/drift use <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-22 17:23</span></div>
+ <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. Current arrows are an <b>ocean model, not tidal</b> &mdash; for tidal set/drift use <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-22 17:24</span></div>
 </div>
 <script>/* @preserve
  * Leaflet 1.9.4, a JS library for interactive maps. https://leafletjs.com
@@ -1920,7 +1922,7 @@ document.getElementById('windybtn').addEventListener('click',()=>{
     '&level=surface&overlay=wind&menu=&message=true&marker=&calendar=now&pressure=&type=map'+
     '&location=coordinates&metricWind=kt&metricTemp=%C2%B0F&radarRange=-1';
   document.getElementById('windyframe').src=src;
-  document.getElementById('windywrap').style.display='block';
+  document.getElementById('windywrap').style.display='flex';
 });
 document.getElementById('windyclose').addEventListener('click',()=>{
   document.getElementById('windywrap').style.display='none';
