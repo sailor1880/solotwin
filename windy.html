@@ -1,0 +1,44 @@
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Sailing Assistant Windy">
+<title>Sailing Assistant &mdash; Windy</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"></script>
+<script src="https://api.windy.com/assets/map-forecast/libBoot.js"></script>
+<style>
+ html,body,#windy{margin:0;height:100%;width:100%}
+ #back{position:absolute;top:8px;left:8px;z-index:10000;background:#fff;color:#0b3d66;font-weight:bold;
+   text-decoration:none;padding:9px 14px;border-radius:7px;box-shadow:0 1px 5px rgba(0,0,0,.5);font-family:system-ui}
+ #msg{position:absolute;top:46%;left:0;right:0;text-align:center;font-family:system-ui;color:#333;z-index:9998}
+ .leaflet-tooltip{font-size:11px}
+</style></head><body>
+<div id="windy"></div>
+<a id="back" href="index.html">&#8592; Chart</a>
+<div id="msg">Loading Windy&hellip;</div>
+<script>
+const D = {"marks": {"CH": {"lat": 41.46217611111111, "lon": -71.36291999999999, "llnr": "17795", "name": "Castle Hill Light", "short": "Castle Hill Light (Finish, east end of line)"}, "R4": {"lat": 41.14548805555555, "lon": -71.62246888888889, "llnr": "19735", "name": "Southwest Point Lighted Whistle Buoy 4", "short": "R \"4\" Fl R 6s Whistle"}, "R2": {"lat": 41.307692499999995, "lon": -71.47245333333333, "llnr": "19460", "name": "Point Judith Lighted Buoy 2", "short": "R \"2\" Fl R 4s Whistle"}, "R32": {"lat": 41.36804194444444, "lon": -70.95697277777778, "llnr": "15613", "name": "Vineyard Sound Entrance Lighted Whistle Buoy 32", "short": "R \"32\" Fl R 2.5s Whistle"}, "G5": {"lat": 41.210170833333336, "lon": -71.53385805555556, "llnr": "19685", "name": "Block Island Northeast Whistle Buoy 5", "short": "G \"5\" Whistle"}, "BB": {"lat": 41.39698666666666, "lon": -71.03468805555555, "llnr": "15985", "name": "Buzzards Bay Entrance Light", "short": "Buzzards Bay Entrance Light Fl W 2.5s"}, "NB": {"lat": 41.38334277777778, "lon": -71.38930055555556, "llnr": "17675", "name": "Narragansett Bay Entrance Lighted Whistle Buoy (Mo(A)W, AIS MMSI 993672153)", "short": "RW \"NB\" Mo(A)W"}, "G1BI": {"lat": 41.25731305555556, "lon": -71.57593277777778, "llnr": "19475", "name": "Block Island North Reef Lighted Bell Buoy 1BI", "short": "G \"1BI\" Fl G 4s Bell"}, "VM1": {"lat": 40.63333333333333, "lon": -71.61666666666666, "llnr": null, "name": "Virtual Mark 1 (SI: 40-38-00N / 071-37-00W)", "short": "Virtual Mark 1"}, "VM2": {"lat": 40.71666666666667, "lon": -71.18333333333334, "llnr": null, "name": "Virtual Mark 2 (SI: 40-43-00N / 071-11-00W)", "short": "Virtual Mark 2"}, "START": {"lat": 41.4915, "lon": -71.336, "llnr": null, "name": "Start area - RC-set line west of Goat Island (SI 7.1); approximate, not a fixed aid", "short": "START (W of Goat Island)"}}, "courses": [{"code": "A", "dist": "120 NM", "seq": ["START", "R4", "VM1", "VM2", "R2", "CH"], "color": "#e6194b"}, {"code": "B", "dist": "103 NM", "seq": ["START", "R4", "R32", "G5", "CH"], "color": "#f58231"}, {"code": "C", "dist": "93 NM", "seq": ["START", "R4", "R32", "R2", "CH"], "color": "#3cb44b"}, {"code": "D", "dist": "77.2 NM", "seq": ["START", "R4", "BB", "NB", "CH"], "color": "#4363d8"}, {"code": "E", "dist": "70 NM", "seq": ["START", "G5", "R32", "NB", "CH"], "color": "#911eb4"}, {"code": "F", "dist": "65 NM", "seq": ["START", "G1BI", "BB", "NB", "CH"], "color": "#008080"}, {"code": "G", "dist": "60 NM", "seq": ["START", "R2", "R32", "NB", "CH"], "color": "#e6b800"}], "ez": [{"id": "EZ01", "lat": 41.15833333333333, "lon": -71.26666666666667}, {"id": "EZ02", "lat": 41.23166666666667, "lon": -71.175}, {"id": "EZ03", "lat": 41.23166666666667, "lon": -71.05833333333334}, {"id": "EZ04", "lat": 41.13333333333333, "lon": -70.83333333333333}, {"id": "EZ05", "lat": 41.111666666666665, "lon": -70.83166666666666}, {"id": "EZ06", "lat": 41.075, "lon": -70.94166666666666}, {"id": "EZ07", "lat": 41.071666666666665, "lon": -71.19333333333333}], "finish": {"a": [41.46217611111111, -71.36291999999999], "b": [41.46483167228598, -71.37578501769853]}};
+let KEY = "lXsLH7lUO9iXYZgssZSp100sjgXLz4Hd";
+if(!KEY || KEY.slice(0,2)==='__'){ KEY = localStorage.getItem('windy_key') || (prompt('Paste your Windy API key:')||''); if(KEY) localStorage.setItem('windy_key',KEY); }
+if(!KEY){ document.getElementById('msg').textContent='No Windy API key provided.'; }
+else windyInit({key:KEY, verbose:false, lat:41.1, lon:-71.3, zoom:9}, windyAPI=>{
+  const msg=document.getElementById('msg'); if(msg) msg.style.display='none';
+  const map = windyAPI.map;
+  D.courses.forEach(c=>{ const pts=c.seq.map(m=>[D.marks[m].lat,D.marks[m].lon]);
+    L.polyline(pts,{color:c.color,weight:3,opacity:.95}).bindPopup('Course '+c.code+' &mdash; '+c.dist).addTo(map); });
+  L.polygon(D.ez.map(e=>[e.lat,e.lon]),{color:'#c00',weight:2,fillColor:'#c00',fillOpacity:.18})
+    .bindPopup('Cox Ledge Exclusion Zone &mdash; do not enter').addTo(map);
+  L.polyline([D.finish.a,D.finish.b],{color:'#0033cc',weight:4,dashArray:'6 4'}).bindPopup('Finish line (120&deg;/300&deg;)').addTo(map);
+  Object.entries(D.marks).forEach(([id,m])=>{ const isV=id.startsWith('VM'),isS=id==='START';
+    L.circleMarker([m.lat,m.lon],{radius:isS?7:5,color:'#111',weight:1.5,
+      fillColor:isS?'#22c55e':(isV?'#ffd400':'#ff2d2d'),fillOpacity:1})
+      .bindPopup('<b>'+id+' &mdash; '+m.short+'</b><br>'+m.name)
+      .bindTooltip(id,{permanent:true,direction:'right',offset:[6,0]}).addTo(map); });
+  if('geolocation' in navigator){ let bm=null,first=true;
+    navigator.geolocation.watchPosition(p=>{ const ll=[p.coords.latitude,p.coords.longitude];
+      if(!bm){ bm=L.circleMarker(ll,{radius:6,color:'#fff',weight:2,fillColor:'#c1121f',fillOpacity:1}).addTo(map).bindTooltip('You'); }
+      else bm.setLatLng(ll); if(first){ map.setView(ll,10); first=false; } }, ()=>{}, {enableHighAccuracy:true,maximumAge:3000}); }
+});
+</script>
+<div style="position:absolute;bottom:2px;right:4px;z-index:9999;font:11px system-ui;color:#bbb">build 2026-07-22 17:29</div>
+</body></html>
