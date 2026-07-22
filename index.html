@@ -697,6 +697,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <h3>Sailing Assistant</h3>
  <b style="font-size:12px">Chart base</b>
  <div id="bases"></div><hr>
+ <label style="font-size:12px"><input type="checkbox" id="twinchk" checked> <b>Current race: SOLO/TWIN</b> (hide to focus a loaded race)</label>
  <div style="font-size:12px;margin-bottom:2px"><b>SOLO/TWIN courses</b>
    <button id="allcourses" style="font-size:11px">all on</button>
    <button id="nocourses" style="font-size:11px">all off</button></div>
@@ -2079,6 +2080,17 @@ D.courses.forEach(c=>{
   });
 });
 document.getElementById('revchk').addEventListener('change',redrawCourses);
+
+// ---- Current race (SOLO/TWIN) master show/hide ----
+document.getElementById('twinchk').addEventListener('change',e=>{
+  const on=e.target.checked;
+  document.querySelectorAll('#list input[type=checkbox]').forEach((cb,i)=>{
+    const lyr=courseLayers[D.courses[i].code];
+    (on && cb.checked)? lyr.addTo(map) : map.removeLayer(lyr);
+  });
+  const sync=(id,layer)=>{ (on && document.getElementById(id).checked)? layer.addTo(map) : map.removeLayer(layer); };
+  sync('mkchk',markLayer); sync('ezchk',ezLayer); sync('finchk',finLayer);
+});
 ezLayer.addTo(map); finLayer.addTo(map); markLayer.addTo(map);
 const tog=(id,layer)=>document.getElementById(id).addEventListener('change',e=>{e.target.checked?layer.addTo(map):map.removeLayer(layer);});
 tog('ezchk',ezLayer); tog('finchk',finLayer); tog('skchk',seamark); tog('mkchk',markLayer);
