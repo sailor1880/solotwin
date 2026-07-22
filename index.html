@@ -745,7 +745,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <label><input type="checkbox" id="raceschk" checked> Show added races</label>
  <div id="racelist" style="font-size:11px;color:#555"></div>
  <button id="clrgpx" style="font-size:11px;margin-top:2px">Clear added races</button>
- <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. Current arrows are an <b>ocean model, not tidal</b> &mdash; for tidal set/drift use <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-22 17:51</span></div>
+ <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. Current arrows are an <b>ocean model, not tidal</b> &mdash; for tidal set/drift use <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-22 17:56</span></div>
 </div>
 <script>/* @preserve
  * Leaflet 1.9.4, a JS library for interactive maps. https://leafletjs.com
@@ -2290,11 +2290,26 @@ document.getElementById('raceschk').addEventListener('change',applyRaceVisibilit
 // ---- NOAA aids (USCG Light List Vol 1, bundled aids.json, lazy-loaded, viewport-culled + canvas) ----
 let AIDS=null; const aidsCanvas=L.canvas({padding:0.3}), aidsLayer=L.layerGroup();
 const aidsOn=()=>document.getElementById('aidschk').checked;
+function aidStyle(a){                       // chart-like colour from Light List name + characteristic
+  const nm=(a[3]||'').toLowerCase(), ch=(a[4]||'').toLowerCase(), t=nm+' '+ch;
+  let color='#7a8a99';                     // default: unlit / other (grey-blue)
+  if(/(^|[^a-z])g( |")|green|fl g|q g|iso g|oc g|fl \(2\)g/.test(t)) color='#0a9b0a';
+  if(/(^|[^a-z])r( |")|red|fl r|q r|iso r|oc r|fl \(2\)r/.test(t)) color='#e11';
+  if(/yellow|fl y|q y|(^|[^a-z])y( |")/.test(t)) color='#efc000';
+  const safe=/rw |mo ?\(a\)|safe water|fairway|midchannel/.test(t);
+  const rg=/(rg|gr) |junction|preferred channel/.test(t);
+  if(safe||rg) color='#e11';                // safe-water / junction shown red-ish (ring differentiates)
+  const white=/fl w|q w|oc w|iso w|f w|mo ?\(a\)|al w/.test(ch);
+  if(white && color==='#7a8a99') color='#f4f4f4';
+  const lit=/\b(fl|q|oc|iso|mo|l fl|vq|uq|al)\b|f w|f r|f g/.test(ch);
+  return {color, lit, safe, ring: lit?'#c800c8':(safe?'#fff':'#333'), r: lit?5:4, w: (lit||safe)?2:1};
+}
 function renderAids(){ aidsLayer.clearLayers(); if(!AIDS) return;
   const b=map.getBounds().pad(0.2), s=b.getSouth(),n=b.getNorth(),w=b.getWest(),e=b.getEast();
   let cnt=0; const CAP=1600;
   for(const a of AIDS){ if(a[0]<s||a[0]>n||a[1]<w||a[1]>e) continue;
-    L.circleMarker([a[0],a[1]],{renderer:aidsCanvas,radius:4,color:'#7a0177',weight:1,fillColor:'#f768a1',fillOpacity:.9})
+    const st=aidStyle(a);
+    L.circleMarker([a[0],a[1]],{renderer:aidsCanvas,radius:st.r,color:st.ring,weight:st.w,fillColor:st.color,fillOpacity:.95})
       .bindPopup('<b>'+a[3]+'</b>'+(a[4]?'<br>'+a[4]:'')+(a[2]?'<br>Light List #'+a[2]:'')+'<br>'+a[0].toFixed(5)+', '+a[1].toFixed(5))
       .addTo(aidsLayer);
     if(++cnt>=CAP) break; }
