@@ -705,6 +705,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <label><input type="checkbox" id="aquachk"> Aquaculture leases (RI&nbsp;DEM)</label>
  <label><input type="checkbox" id="trapchk"> Fish traps (RI&nbsp;DEM)</label>
  <label><input type="checkbox" id="sbchk"> South Bay Race Marks (labeled)</label>
+ <label><input type="checkbox" id="clubschk"> Clubs &amp; services (&#9733;)</label>
  <button id="bbabtn" style="font-size:11px;margin-top:3px;cursor:pointer;width:100%">Bay events (Better Bay Alliance) &#8599;</button>
  <hr>
  <label style="font-size:12px"><input type="checkbox" id="twinchk" checked> <b>Current race: SOLO/TWIN</b> (hide to focus a loaded race)</label>
@@ -756,7 +757,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <label><input type="checkbox" id="raceschk" checked> Show added races</label>
  <div id="racelist" style="font-size:11px;color:#555"></div>
  <button id="clrgpx" style="font-size:11px;margin-top:2px">Clear added races</button>
- <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. Current arrows are an <b>ocean model, not tidal</b> &mdash; for tidal set/drift use <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-22 19:18</span></div>
+ <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. Current arrows are an <b>ocean model, not tidal</b> &mdash; for tidal set/drift use <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-22 19:21</span></div>
 </div>
 <script>/* @preserve
  * Leaflet 1.9.4, a JS library for interactive maps. https://leafletjs.com
@@ -2326,6 +2327,37 @@ document.getElementById('sbchk').addEventListener('change',async e=>{
     sbLayer.addTo(map); }
     catch(err){ alert('Could not load South Bay marks: '+err); e.target.checked=false; } }
   else if(sbLayer) map.removeLayer(sbLayer); });
+
+// ---- Clubs & services: blue-star waypoints, popup = name / VHF / tap-to-call phone (positions approx) ----
+const CLUBS=[
+["Coasters Harbor Navy YC","09","(401) 841-3283",41.5075,-71.3260],
+["Conanicut YC","72","(401) 423-1424",41.5035,-71.3660],
+["Ida Lewis YC","78A","(401) 846-1969",41.4782,-71.3268],
+["Jamestown–Newport Ferry","","(401) 423-9900",41.5035,-71.3655],
+["Jamestown YC","72","(401) 782-7271",41.5010,-71.3672],
+["Newport YC","78A","(401) 846-9410",41.4890,-71.3178],
+["New York YC (Harbour Court)","74","(401) 846-1000",41.4815,-71.3235],
+["Newport Harbor Master","16","(401) 845-5815",41.4875,-71.3228],
+["Northeast Marine Pilots Assn.","13","(401) 847-9050 x1",41.4870,-71.3236],
+["Oldport Marine Launch","68","(401) 847-9109",41.4878,-71.3255],
+["Safe Harbor Newport Shipyard","09","(401) 846-6000",41.4930,-71.3195],
+["Safe Harbor Jamestown Boatyard","72","(401) 423-0600",41.4975,-71.3685],
+["Safe Harbor Wickford Cove","09","(401) 884-7014",41.5715,-71.4405],
+["Safe Harbor New England Boatworks","09","(401) 683-4000",41.5855,-71.2920],
+["Sail Newport (Fort Adams)","09","(401) 849-8385",41.4775,-71.3390],
+["Saunderstown YC","","(401) 295-0080",41.5300,-71.4230],
+["US Coast Guard Stn Castle Hill","16","(401) 846-3675",41.4620,-71.3630]];
+const clubIcon=L.divIcon({className:'',iconSize:[22,22],iconAnchor:[11,11],
+  html:'<div style="color:#1565c0;font-size:20px;line-height:22px;text-align:center;text-shadow:0 0 2px #fff,0 0 3px #fff">★</div>'});
+let clubsLayer=null;
+document.getElementById('clubschk').addEventListener('change',e=>{
+  if(e.target.checked){ if(!clubsLayer){ clubsLayer=L.layerGroup();
+    CLUBS.forEach(([n,v,p,la,lo])=>{ const tel=p.replace(/[^0-9]/g,'').slice(0,10);
+      const vhf=v?'<span style="background:#0b3d66;color:#fff;border-radius:4px;padding:1px 6px;margin-right:5px">VHF '+v+'</span>':'';
+      L.marker([la,lo],{icon:clubIcon}).bindPopup('<b>'+n+'</b><br>'+vhf+'<a href="tel:+1'+tel+'">'+p+'</a>')
+        .bindTooltip(n,{direction:'top'}).addTo(clubsLayer); }); }
+    clubsLayer.addTo(map); }
+  else if(clubsLayer) map.removeLayer(clubsLayer); });
 
 // ---- Other races: import GPX -> per-route (course) checkboxes; honors Reverse toggle ----
 let racesRaw=[]; const RKEY='sa_races';
