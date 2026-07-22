@@ -1817,9 +1817,15 @@ function arrow(deg,color){            // arrow points UP by default -> rotate to
 }
 const spdColor=s=> s<8?'#2c7fb8': s<16?'#41ab5d': s<22?'#f0a020':'#e6194b';
 const hour=()=>+document.getElementById('thr').value;
+function mapTZ(){ const lon=map.getCenter().lng;   // local zone from where the map is centered
+  return lon>-67.5?'America/Halifax': lon>-82.5?'America/New_York': lon>-97.5?'America/Chicago':
+         lon>-112.5?'America/Denver':'America/Los_Angeles'; }
 function setWhen(){ const el=document.getElementById('when'); if(!el) return;
   const t=(typeof TIMES!=='undefined'&&TIMES)? new Date(Date.parse(TIMES[hour()]+'Z')) : new Date(Date.now()+hour()*3600000);
-  el.textContent='Fcst: '+t.toISOString().slice(0,16).replace('T',' ')+'Z'; }
+  const utc=t.toISOString().slice(0,16).replace('T',' ');
+  let loc; try{ loc=t.toLocaleTimeString('en-US',{timeZone:mapTZ(),hour:'2-digit',minute:'2-digit',hour12:true,timeZoneName:'short'}); }
+  catch(e){ loc=t.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:true}); }
+  el.textContent='Fcst: '+utc+'Z ('+loc+')'; }
 
 async function loadWind(){
   const u='https://api.open-meteo.com/v1/forecast?latitude='+latCSV+'&longitude='+lonCSV+
