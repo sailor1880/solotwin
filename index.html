@@ -2141,8 +2141,15 @@ function drawRoute(){
   });
   routeInfo();
 }
+function eachClickable(fn){                 // interactive overlays that would otherwise grab taps
+  Object.values(courseLayers).forEach(fn); markLayer.eachLayer(fn); fn(ezLayer); fn(finLayer);
+  if(typeof races!=='undefined') races.forEach(r=>{ r.routes.forEach(rt=>fn(rt.layer)); r.extra.forEach(fn); });
+  if(typeof coopsLayer!=='undefined') coopsLayer.eachLayer(fn);
+}
+function setDrawPassthrough(on){ map.closePopup();      // draw mode -> taps fall through to the map
+  eachClickable(l=>{ const el=l&&(l._path||l._icon); if(el) el.style.pointerEvents=on?'none':''; }); }
 document.getElementById('drawchk').addEventListener('change',e=>{ drawMode=e.target.checked;
-  map.getContainer().style.cursor=drawMode?'crosshair':''; });
+  map.getContainer().style.cursor=drawMode?'crosshair':''; setDrawPassthrough(drawMode); });
 document.getElementById('undobtn').onclick =()=>{ routePts.pop(); drawRoute(); };
 document.getElementById('clrroute').onclick=()=>{ routePts=[]; drawRoute(); };
 
