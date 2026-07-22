@@ -744,7 +744,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <label><input type="checkbox" id="raceschk" checked> Show added races</label>
  <div id="racelist" style="font-size:11px;color:#555"></div>
  <button id="clrgpx" style="font-size:11px;margin-top:2px">Clear added races</button>
- <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. Current arrows are an <b>ocean model, not tidal</b> &mdash; for tidal set/drift use <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-22 17:29</span></div>
+ <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. Current arrows are an <b>ocean model, not tidal</b> &mdash; for tidal set/drift use <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-22 17:30</span></div>
 </div>
 <script>/* @preserve
  * Leaflet 1.9.4, a JS library for interactive maps. https://leafletjs.com
@@ -1778,19 +1778,15 @@ function esriExportLayer(base, attr){
 }
 
 // ---- Base layers (chart) ----
-// NOAA Chart Display Service (NCDS) - full nautical chart with paper-chart symbology.
-const ncds = esriExportLayer(
-   'https://gis.charttools.noaa.gov/arcgis/rest/services/MCS/NOAAChartDisplay/MapServer','NOAA NCDS');
-// NOAA ENC Online (Maritime Chart Service) - alternate renderer / fallback.
+// NOAA ENC Online (Maritime Chart Service) - full nautical chart, renderer confirmed working.
 const encOnline = esriExportLayer(
    'https://gis.charttools.noaa.gov/arcgis/rest/services/MCS/ENCOnline/MapServer/exts/MaritimeChartService/MapServer','NOAA ENC Online');
 const osm  = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',
    {maxZoom:19,attribution:'&copy; OpenStreetMap'});
 const carto= L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
    {maxZoom:20,attribution:'&copy; OSM &copy; CARTO'});
-const bases = {'NOAA ENC Online (nautical chart)':encOnline,'NOAA NCDS':ncds,
-               'OpenStreetMap':osm,'Light (Carto)':carto};
-encOnline.addTo(map);                               // default: renderer confirmed working
+const bases = {'NOAA ENC Online (nautical chart)':encOnline,'OpenStreetMap':osm,'Light (Carto)':carto};
+encOnline.addTo(map);                               // default
 
 // Seamark overlay (buoys/lights) - works on top of any base
 const seamark = L.tileLayer('https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png',
