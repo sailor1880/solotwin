@@ -820,8 +820,8 @@ document.getElementById('radarchk').addEventListener('change',async e=>{
   if(e.target.checked){ try{
       const j=await (await fetch('https://api.rainviewer.com/public/weather-maps.json')).json();
       const fr=j.radar.past[j.radar.past.length-1];
-      radarLayer=L.tileLayer(j.host+fr.path+'/256/{z}/{x}/{y}/2/1_1.png',
-        {opacity:0.6,attribution:'RainViewer'}).addTo(map);
+      radarLayer=L.tileLayer(j.host+fr.path+'/512/{z}/{x}/{y}/2/1_1.png',
+        {opacity:0.6,maxNativeZoom:10,maxZoom:18,tileSize:512,zoomOffset:0,attribution:'RainViewer'}).addTo(map);
     }catch(err){ alert('Radar unavailable: '+err); e.target.checked=false; } }
   else if(radarLayer){ map.removeLayer(radarLayer); radarLayer=null; }
 });
