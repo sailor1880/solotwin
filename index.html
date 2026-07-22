@@ -1998,7 +1998,7 @@ async function loadCoops(){
     s.marker=L.circleMarker([s.lat,s.lng],{radius:4,color:'#023e8a',weight:1,fillColor:'#90e0ef',fillOpacity:1})
       .bindTooltip(s.name,{direction:'top'})
       .on('click',function(){ this.bindPopup('<b>'+s.name+'</b><br>Station '+s.id+
-        '<br><a href="https://tidesandcurrents.noaa.gov/noaacurrents/Predictions?id='+s.id+'" target="_blank">Full NOAA predictions &#8599;</a>').openPopup(); });
+        '<br><a href="https://tidesandcurrents.noaa.gov/noaacurrents/predictions?id='+s.id+'" target="_blank">Full NOAA predictions &#8599;</a>').openPopup(); });
     s.marker.addTo(coopsLayer);
   });
   coopsLoaded=true; loadCoopsPreds();
