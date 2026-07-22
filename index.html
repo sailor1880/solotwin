@@ -2079,7 +2079,7 @@ D.courses.forEach(c=>{
     e.target.checked?courseLayers[c.code].addTo(map):map.removeLayer(courseLayers[c.code]);
   });
 });
-document.getElementById('revchk').addEventListener('change',redrawCourses);
+document.getElementById('revchk').addEventListener('change',()=>{ redrawCourses(); redrawImported(); });
 
 // ---- Current race (SOLO/TWIN) master show/hide ----
 document.getElementById('twinchk').addEventListener('change',e=>{
@@ -2161,42 +2161,58 @@ document.getElementById('savetrack').onclick=()=>{ if(!trackPts.length){ alert('
 document.getElementById('saveroute').onclick=()=>{ if(routePts.length<2){ alert('Tap the map to add at least 2 route points.'); return; }
   downloadGPX('solotwin_route',routePts.map(p=>[p.lat.toFixed(6),p.lng.toFixed(6)]),true); };
 
-// ---- Other races: import GPX (routes/tracks/waypoints), persists on this device ----
-const racesLayer=L.layerGroup().addTo(map);
+// ---- Other races: import GPX -> per-route (course) checkboxes; honors Reverse toggle ----
 let racesRaw=[]; const RKEY='sa_races';
 const RCOL=['#8e44ad','#d35400','#16a085','#2c3e50','#0088aa'];
-function parseGPX(text,name,idx){
+let races=[];   // {name,color,bounds,routes:[{name,pts,layer,on}], extra:[layer]}
+const racesOn=()=>document.getElementById('raceschk').checked;
+function revPts(pts){ return (isRev() && pts.length>2) ? [pts[0], ...pts.slice(1,-1).reverse(), pts[pts.length-1]] : pts; }
+function buildRace(text,name,idx){
   const xml=new DOMParser().parseFromString(text,'application/xml');
   if(xml.getElementsByTagName('parsererror').length) throw new Error('not valid GPX/XML');
   const col=RCOL[idx%RCOL.length], b=[];
   const tag=(el,t)=>Array.from(el.getElementsByTagNameNS('*',t));
   const nm=el=>{ const x=tag(el,'name')[0]; return x?x.textContent:''; };
   const collect=els=>els.map(p=>{ const la=+p.getAttribute('lat'),lo=+p.getAttribute('lon'); b.push([la,lo]); return [la,lo]; });
-  const line=(pts,label)=>{ if(pts.length>1) L.polyline(pts,{color:col,weight:3}).bindPopup(label||name).addTo(racesLayer); };
-  tag(xml,'rte').forEach(r=>line(collect(tag(r,'rtept')),nm(r)));
-  tag(xml,'trk').forEach(t=>{ let pts=[]; tag(t,'trkseg').forEach(sg=>pts=pts.concat(collect(tag(sg,'trkpt')))); line(pts,nm(t)); });
+  const race={name,color:col,bounds:b,routes:[],extra:[]};
+  const addRoute=(pts,label)=>{ if(pts.length>1){
+    const layer=L.polyline(revPts(pts),{color:col,weight:3}).bindPopup(label||name);
+    race.routes.push({name:label||('course '+(race.routes.length+1)),pts,layer,on:true}); } };
+  tag(xml,'rte').forEach(r=>addRoute(collect(tag(r,'rtept')),nm(r)));
+  tag(xml,'trk').forEach(t=>{ let pts=[]; tag(t,'trkseg').forEach(sg=>pts=pts.concat(collect(tag(sg,'trkpt'))));
+    if(pts.length>1) race.extra.push(L.polyline(pts,{color:col,weight:2,opacity:.7,dashArray:'4 3'}).bindPopup(nm(t)||name)); });
   tag(xml,'wpt').forEach(w=>{ const la=+w.getAttribute('lat'),lo=+w.getAttribute('lon'); b.push([la,lo]);
-    L.circleMarker([la,lo],{radius:5,color:col,fillColor:'#fff',fillOpacity:1,weight:2})
-     .bindPopup(nm(w)||name).bindTooltip(nm(w),{direction:'right'}).addTo(racesLayer); });
-  return b;
+    race.extra.push(L.circleMarker([la,lo],{radius:5,color:col,fillColor:'#fff',fillOpacity:1,weight:2})
+      .bindPopup(nm(w)||name).bindTooltip(nm(w),{direction:'right'})); });
+  return race;
 }
-function renderRaceList(){ document.getElementById('racelist').innerHTML=
-  racesRaw.map((r,i)=>'<span style="color:'+RCOL[i%RCOL.length]+'">&#9646;</span> '+r.name).join('<br>'); }
-function addRace(text,name,idx,fit){ try{ const b=parseGPX(text,name,idx);
-    if(fit&&b.length) map.fitBounds(b,{padding:[30,30]}); }
+function applyRaceVisibility(){ const on=racesOn(); races.forEach(r=>{
+  r.routes.forEach(rt=> (on&&rt.on)? rt.layer.addTo(map):map.removeLayer(rt.layer) );
+  r.extra.forEach(l=> on? l.addTo(map):map.removeLayer(l) ); }); }
+function redrawImported(){ races.forEach(r=>r.routes.forEach(rt=>rt.layer.setLatLngs(revPts(rt.pts)))); }
+function renderRaceList(){ const box=document.getElementById('racelist'); box.innerHTML='';
+  races.forEach(r=>{ const h=document.createElement('div'); h.style.marginTop='3px';
+    h.innerHTML='<span style="color:'+r.color+'">&#9646;</span> <b>'+r.name+'</b>'; box.appendChild(h);
+    r.routes.forEach(rt=>{ const lab=document.createElement('label'); lab.style.display='block'; lab.style.marginLeft='10px';
+      lab.innerHTML='<input type="checkbox" '+(rt.on?'checked':'')+'> '+rt.name;
+      lab.querySelector('input').addEventListener('change',e=>{ rt.on=e.target.checked; applyRaceVisibility(); });
+      box.appendChild(lab); }); }); }
+function addRace(text,name,idx,fit){ try{ const r=buildRace(text,name,idx); races.push(r); applyRaceVisibility();
+    if(fit&&r.bounds.length) map.fitBounds(r.bounds,{padding:[30,30]}); }
   catch(e){ alert('Could not read GPX "'+name+'": '+e.message); } }
-function saveRaces(){ try{ localStorage.setItem(RKEY,JSON.stringify(racesRaw)); }catch(e){ alert('Too large to save on device; it will show until reload.'); } }
+function saveRaces(){ try{ localStorage.setItem(RKEY,JSON.stringify(racesRaw)); }catch(e){ alert('Too large to save on device; shows until reload.'); } }
 document.getElementById('gpxfile').addEventListener('change',ev=>{
   const f=ev.target.files[0]; if(!f) return;
   const rd=new FileReader();
   rd.onload=()=>{ racesRaw.push({name:f.name,text:rd.result}); saveRaces();
-    addRace(rd.result,f.name,racesRaw.length-1,true); renderRaceList();
-    if(!document.getElementById('raceschk').checked){ document.getElementById('raceschk').checked=true; racesLayer.addTo(map);} };
+    if(!document.getElementById('raceschk').checked) document.getElementById('raceschk').checked=true;
+    addRace(rd.result,f.name,racesRaw.length-1,true); renderRaceList(); };
   rd.readAsText(f); ev.target.value='';
 });
 document.getElementById('clrgpx').onclick=()=>{ if(!racesRaw.length) return; if(!confirm('Remove all added races?')) return;
-  racesLayer.clearLayers(); racesRaw=[]; try{ localStorage.removeItem(RKEY); }catch(e){} renderRaceList(); };
-document.getElementById('raceschk').addEventListener('change',e=>{ e.target.checked?racesLayer.addTo(map):map.removeLayer(racesLayer); });
+  races.forEach(r=>{ r.routes.forEach(rt=>map.removeLayer(rt.layer)); r.extra.forEach(l=>map.removeLayer(l)); });
+  races=[]; racesRaw=[]; try{ localStorage.removeItem(RKEY); }catch(e){} renderRaceList(); };
+document.getElementById('raceschk').addEventListener('change',applyRaceVisibility);
 (function(){ try{ racesRaw=JSON.parse(localStorage.getItem(RKEY)||'[]'); }catch(e){ racesRaw=[]; }
-  racesRaw.forEach((r,i)=>addRace(r.text,r.name,i,false)); renderRaceList(); })();
+  racesRaw.forEach((r,i)=>{ try{ races.push(buildRace(r.text,r.name,i)); }catch(e){} }); applyRaceVisibility(); renderRaceList(); })();
 </script></body></html>
