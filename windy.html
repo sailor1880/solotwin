@@ -24,21 +24,32 @@ if(!KEY){ document.getElementById('msg').textContent='No Windy API key provided.
 else windyInit({key:KEY, verbose:false, lat:41.1, lon:-71.3, zoom:9}, windyAPI=>{
   const msg=document.getElementById('msg'); if(msg) msg.style.display='none';
   const map = windyAPI.map;
-  D.courses.forEach(c=>{ const pts=c.seq.map(m=>[D.marks[m].lat,D.marks[m].lon]);
-    L.polyline(pts,{color:c.color,weight:3,opacity:.95}).bindPopup('Course '+c.code+' &mdash; '+c.dist).addTo(map); });
-  L.polygon(D.ez.map(e=>[e.lat,e.lon]),{color:'#c00',weight:2,fillColor:'#c00',fillOpacity:.18})
-    .bindPopup('Cox Ledge Exclusion Zone &mdash; do not enter').addTo(map);
-  L.polyline([D.finish.a,D.finish.b],{color:'#0033cc',weight:4,dashArray:'6 4'}).bindPopup('Finish line (120&deg;/300&deg;)').addTo(map);
-  Object.entries(D.marks).forEach(([id,m])=>{ const isV=id.startsWith('VM'),isS=id==='START';
+  const view=(function(){ try{ return JSON.parse(localStorage.getItem('sa_view')||'null'); }catch(e){ return null; } })()
+             || {courses:D.courses.map(c=>c.code), rev:false};
+  const shown=new Set(view.courses||[]), used=new Set();
+  const seqOf=c=> (view.rev && c.seq.length>2) ? [c.seq[0],...c.seq.slice(1,-1).reverse(),c.seq[c.seq.length-1]] : c.seq;
+  D.courses.filter(c=>shown.has(c.code)).forEach(c=>{ const seq=seqOf(c);
+    L.polyline(seq.map(m=>[D.marks[m].lat,D.marks[m].lon]),{color:c.color,weight:3,opacity:.95})
+      .bindPopup('Course '+c.code+' &mdash; '+c.dist+(view.rev?' (rev)':'')).addTo(map);
+    seq.forEach(m=>used.add(m)); });
+  used.forEach(id=>{ const m=D.marks[id]; const isV=id.startsWith('VM'),isS=id==='START';
     L.circleMarker([m.lat,m.lon],{radius:isS?7:5,color:'#111',weight:1.5,
       fillColor:isS?'#22c55e':(isV?'#ffd400':'#ff2d2d'),fillOpacity:1})
       .bindPopup('<b>'+id+' &mdash; '+m.short+'</b><br>'+m.name)
       .bindTooltip(id,{permanent:true,direction:'right',offset:[6,0]}).addTo(map); });
+  L.polygon(D.ez.map(e=>[e.lat,e.lon]),{color:'#c00',weight:2,fillColor:'#c00',fillOpacity:.18})
+    .bindPopup('Cox Ledge Exclusion Zone &mdash; do not enter').addTo(map);
+  L.polyline([D.finish.a,D.finish.b],{color:'#0033cc',weight:4,dashArray:'6 4'}).bindPopup('Finish line').addTo(map);
+  try{ (JSON.parse(localStorage.getItem('sa_saved')||'[]')).forEach((r,i)=>{ if(r.on===false) return;
+    const col=['#0a7d2c','#b5179e','#f77f00','#3a0ca3','#006d77'][i%5];
+    L.polyline(r.pts,{color:col,weight:3}).bindPopup('Saved: '+r.name).addTo(map); }); }catch(e){}
+  try{ const dr=JSON.parse(localStorage.getItem('sa_route')||'[]'); if(dr.length>1)
+    L.polyline(dr,{color:'#0a7d2c',weight:3,dashArray:'6 4'}).bindPopup('Drawn route').addTo(map); }catch(e){}
   if('geolocation' in navigator){ let bm=null,first=true;
     navigator.geolocation.watchPosition(p=>{ const ll=[p.coords.latitude,p.coords.longitude];
       if(!bm){ bm=L.circleMarker(ll,{radius:6,color:'#fff',weight:2,fillColor:'#c1121f',fillOpacity:1}).addTo(map).bindTooltip('You'); }
       else bm.setLatLng(ll); if(first){ map.setView(ll,10); first=false; } }, ()=>{}, {enableHighAccuracy:true,maximumAge:3000}); }
 });
 </script>
-<div style="position:absolute;bottom:2px;right:4px;z-index:9999;font:11px system-ui;color:#bbb">build 2026-07-22 17:30</div>
+<div style="position:absolute;bottom:2px;right:4px;z-index:9999;font:11px system-ui;color:#bbb">build 2026-07-22 18:01</div>
 </body></html>

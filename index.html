@@ -745,7 +745,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <label><input type="checkbox" id="raceschk" checked> Show added races</label>
  <div id="racelist" style="font-size:11px;color:#555"></div>
  <button id="clrgpx" style="font-size:11px;margin-top:2px">Clear added races</button>
- <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. Current arrows are an <b>ocean model, not tidal</b> &mdash; for tidal set/drift use <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-22 17:58</span></div>
+ <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. Current arrows are an <b>ocean model, not tidal</b> &mdash; for tidal set/drift use <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-22 18:01</span></div>
 </div>
 <script>/* @preserve
  * Leaflet 1.9.4, a JS library for interactive maps. https://leafletjs.com
@@ -2114,9 +2114,10 @@ D.courses.forEach(c=>{
   courseLayers[c.code].addTo(map);
   lab.querySelector('input').addEventListener('change',e=>{
     e.target.checked?courseLayers[c.code].addTo(map):map.removeLayer(courseLayers[c.code]);
+    saveView();
   });
 });
-document.getElementById('revchk').addEventListener('change',()=>{ redrawCourses(); redrawImported(); });
+document.getElementById('revchk').addEventListener('change',()=>{ redrawCourses(); redrawImported(); saveView(); });
 
 // ---- Current race (SOLO/TWIN) master show/hide ----
 document.getElementById('twinchk').addEventListener('change',e=>{
@@ -2126,8 +2127,9 @@ document.getElementById('twinchk').addEventListener('change',e=>{
     (on && cb.checked)? lyr.addTo(map) : map.removeLayer(lyr);
   });
   const sync=(id,layer)=>{ (on && document.getElementById(id).checked)? layer.addTo(map) : map.removeLayer(layer); };
-  sync('mkchk',markLayer); sync('ezchk',ezLayer); sync('finchk',finLayer);
+  sync('mkchk',markLayer); sync('ezchk',ezLayer); sync('finchk',finLayer); saveView();
 });
+saveView();   // persist initial view state on load
 ezLayer.addTo(map); finLayer.addTo(map); markLayer.addTo(map);
 const tog=(id,layer)=>document.getElementById(id).addEventListener('change',e=>{e.target.checked?layer.addTo(map):map.removeLayer(layer);});
 tog('ezchk',ezLayer); tog('finchk',finLayer); tog('skchk',seamark); tog('mkchk',markLayer);
@@ -2140,7 +2142,13 @@ function setAllCourses(on){
     cb.checked=on; const code=D.courses[i].code;
     on? courseLayers[code].addTo(map) : map.removeLayer(courseLayers[code]);
   });
+  saveView();
 }
+function saveView(){ try{   // persist which courses are on + reverse state, so windy.html can mirror it
+  const twin=document.getElementById('twinchk').checked, codes=[];
+  document.querySelectorAll('#list input[type=checkbox]').forEach((cb,i)=>{ if(twin&&cb.checked) codes.push(D.courses[i].code); });
+  localStorage.setItem('sa_view', JSON.stringify({courses:codes, rev:document.getElementById('revchk').checked}));
+}catch(e){} }
 document.getElementById('allcourses').onclick=()=>setAllCourses(true);
 document.getElementById('nocourses').onclick =()=>setAllCourses(false);
 
