@@ -26,7 +26,7 @@ else windyInit({key:KEY, verbose:false, lat:41.1, lon:-71.3, zoom:9}, windyAPI=>
   const map = windyAPI.map;
   const view=(function(){ try{ return JSON.parse(localStorage.getItem('sa_view')||'null'); }catch(e){ return null; } })()
              || {courses:D.courses.map(c=>c.code), rev:false};
-  const shown=new Set(view.courses||[]), used=new Set();
+  const shown=new Set(view.twin===false ? [] : (view.courses||[])), used=new Set();
   const seqOf=c=> (view.rev && c.seq.length>2) ? [c.seq[0],...c.seq.slice(1,-1).reverse(),c.seq[c.seq.length-1]] : c.seq;
   D.courses.filter(c=>shown.has(c.code)).forEach(c=>{ const seq=seqOf(c);
     L.polyline(seq.map(m=>[D.marks[m].lat,D.marks[m].lon]),{color:c.color,weight:3,opacity:.95})
@@ -51,5 +51,5 @@ else windyInit({key:KEY, verbose:false, lat:41.1, lon:-71.3, zoom:9}, windyAPI=>
       else bm.setLatLng(ll); if(first){ map.setView(ll,10); first=false; } }, ()=>{}, {enableHighAccuracy:true,maximumAge:3000}); }
 });
 </script>
-<div style="position:absolute;bottom:2px;right:4px;z-index:9999;font:11px system-ui;color:#bbb">build 2026-07-22 18:01</div>
+<div style="position:absolute;bottom:2px;right:4px;z-index:9999;font:11px system-ui;color:#bbb">build 2026-07-22 18:11</div>
 </body></html>
