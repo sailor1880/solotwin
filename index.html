@@ -705,6 +705,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
    <button id="nocourses" style="font-size:11px">all off</button></div>
  <label style="font-size:12px"><input type="checkbox" id="revchk"> Reverse direction (SI 6.3)</label>
  <div id="list"></div>
+ <div id="mycourses"></div>
  <label class="ez"><input type="checkbox" id="ezchk" checked> Cox Ledge Exclusion Zone</label>
  <label class="fin"><input type="checkbox" id="finchk" checked> Finish line (120&deg;/300&deg;)</label>
  <label><input type="checkbox" id="skchk"> Seamarks (OpenSeaMap)</label>
@@ -733,7 +734,8 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <div style="margin-top:2px;display:flex;gap:4px;flex-wrap:wrap">
    <button id="undobtn" style="font-size:11px">Undo pt</button>
    <button id="clrroute" style="font-size:11px">Clear route</button>
-   <button id="savekeep" style="font-size:11px">Save &amp; keep</button>
+   <button id="savekeep" style="font-size:11px">Save &amp; keep (route)</button>
+   <button id="savecourse" style="font-size:11px">Save as course</button>
    <button id="saveroute" style="font-size:11px">Save route.gpx</button></div>
  <div id="savedlist" style="font-size:11px;margin-top:2px"></div>
  <div style="margin-top:3px;display:flex;gap:4px;flex-wrap:wrap">
@@ -745,7 +747,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <label><input type="checkbox" id="raceschk" checked> Show added races</label>
  <div id="racelist" style="font-size:11px;color:#555"></div>
  <button id="clrgpx" style="font-size:11px;margin-top:2px">Clear added races</button>
- <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. Current arrows are an <b>ocean model, not tidal</b> &mdash; for tidal set/drift use <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-22 18:19</span></div>
+ <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. Current arrows are an <b>ocean model, not tidal</b> &mdash; for tidal set/drift use <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-22 18:26</span></div>
 </div>
 <script>/* @preserve
  * Leaflet 1.9.4, a JS library for interactive maps. https://leafletjs.com
@@ -2254,6 +2256,32 @@ document.getElementById('savekeep').onclick=()=>{ if(routePts.length<2){ alert('
   drawSaved(); renderSaved(); persistSaved(); routePts=[]; drawRoute(); };
 (function(){ try{ savedRoutes=JSON.parse(localStorage.getItem(SKEY)||'[]'); }catch(e){ savedRoutes=[]; }
   drawSaved(); renderSaved(); })();
+
+// ---- My courses: promote the drawn points to a NAMED course listed under Courses (persists) ----
+let myCourses=[]; const MCKEY='sa_courses', MCCOL=['#d00','#0a0','#06c','#c60','#909','#0aa'];
+const myCoursesLayer=L.layerGroup().addTo(map);
+function persistCourses(){ try{ localStorage.setItem(MCKEY,JSON.stringify(myCourses.map(c=>({name:c.name,pts:c.pts,on:c.on!==false})))); }catch(e){} }
+function drawMyCourses(){ myCoursesLayer.clearLayers();
+  myCourses.forEach((c,i)=>{ if(c.on===false) return; const col=MCCOL[i%MCCOL.length];
+    L.polyline(c.pts,{color:col,weight:3}).bindPopup('Course: '+c.name).addTo(myCoursesLayer);
+    c.pts.forEach((p,j)=>L.circleMarker(p,{radius:4,color:col,fillColor:'#fff',fillOpacity:1,weight:2})
+      .bindTooltip(String(j+1),{direction:'right'}).addTo(myCoursesLayer)); }); }
+function renderMyCourses(){ const box=document.getElementById('mycourses'); box.innerHTML='';
+  if(myCourses.length){ const h=document.createElement('div'); h.style.marginTop='3px';
+    h.innerHTML='<b style="font-size:12px">My courses</b>'; box.appendChild(h); }
+  myCourses.forEach((c,i)=>{ const col=MCCOL[i%MCCOL.length]; const d=document.createElement('div'); d.style.fontSize='11px';
+    d.innerHTML='<label><input type="checkbox" '+(c.on!==false?'checked':'')+' data-i="'+i+'"> '+
+      '<span style="color:'+col+'">&#9646;</span> '+c.name+'</label> <a href="#" data-del="'+i+'" style="color:#c00">✕</a>';
+    box.appendChild(d); });
+  box.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.addEventListener('change',e=>{
+    myCourses[+e.target.dataset.i].on=e.target.checked; drawMyCourses(); persistCourses(); }));
+  box.querySelectorAll('a[data-del]').forEach(a=>a.addEventListener('click',ev=>{ ev.preventDefault();
+    myCourses.splice(+a.dataset.del,1); drawMyCourses(); renderMyCourses(); persistCourses(); })); }
+document.getElementById('savecourse').onclick=()=>{ if(routePts.length<2){ alert('Tap the map to add at least 2 course marks first.'); return; }
+  const name=prompt('Name this course:','Course '+(myCourses.length+1)); if(name===null) return;
+  myCourses.push({name:name||('Course '+(myCourses.length+1)), pts:routePts.map(p=>[p.lat,p.lng]), on:true});
+  drawMyCourses(); renderMyCourses(); persistCourses(); routePts=[]; drawRoute(); };
+(function(){ try{ myCourses=JSON.parse(localStorage.getItem(MCKEY)||'[]'); }catch(e){ myCourses=[]; } drawMyCourses(); renderMyCourses(); })();
 
 // ---- Other races: import GPX -> per-route (course) checkboxes; honors Reverse toggle ----
 let racesRaw=[]; const RKEY='sa_races';
