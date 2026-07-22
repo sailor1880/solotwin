@@ -696,6 +696,9 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <h3>SOLO/TWIN 2026 Courses</h3>
  <b style="font-size:12px">Chart base</b>
  <div id="bases"></div><hr>
+ <div style="font-size:12px;margin-bottom:2px"><b>Courses</b>
+   <button id="allcourses" style="font-size:11px">all on</button>
+   <button id="nocourses" style="font-size:11px">all off</button></div>
  <div id="list"></div>
  <label class="ez"><input type="checkbox" id="ezchk" checked> Cox Ledge Exclusion Zone</label>
  <label class="fin"><input type="checkbox" id="finchk" checked> Finish line (120&deg;/300&deg;)</label>
@@ -716,6 +719,17 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <label><input type="checkbox" id="gpschk"> My position (boat) &#9973;</label>
  <label style="margin-left:18px;font-size:12px"><input type="checkbox" id="followchk" checked> keep centered</label>
  <label><input type="checkbox" id="coopschk"> Tidal current stations (NOAA)</label>
+ <hr><b style="font-size:12px">Track &amp; route</b>
+ <label><input type="checkbox" id="recchk"> Record my GPS track</label>
+ <label><input type="checkbox" id="drawchk"> Draw a route (tap map)</label>
+ <div id="routeinfo" style="font-size:11px;color:#0a7d2c;min-height:14px"></div>
+ <div style="margin-top:2px;display:flex;gap:4px;flex-wrap:wrap">
+   <button id="undobtn" style="font-size:11px">Undo pt</button>
+   <button id="clrroute" style="font-size:11px">Clear route</button>
+   <button id="saveroute" style="font-size:11px">Save route.gpx</button></div>
+ <div style="margin-top:3px;display:flex;gap:4px;flex-wrap:wrap">
+   <button id="savetrack" style="font-size:11px">Save track.gpx</button>
+   <button id="clrtrack" style="font-size:11px">Clear track</button></div>
  <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. Current arrows are an <b>ocean model, not tidal</b> &mdash; for tidal set/drift use <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>.</div>
 </div>
 <script>/* @preserve
@@ -1734,7 +1748,8 @@ const map = L.map('map',{center:[41.1,-71.3],zoom:9});
 const panelEl=document.getElementById('panel'), collapseEl=document.getElementById('collapse');
 function setPanel(hidden){ panelEl.classList.toggle('hidden',hidden); collapseEl.style.display=hidden?'block':'none'; }
 collapseEl.addEventListener('click',()=>setPanel(false));
-map.on('click',()=>setPanel(true));                    // tap the map -> hide the menu (tap ☰ to show)
+let drawMode=false, routePts=[], routeLine=null;
+map.on('click',e=>{ if(drawMode){ addRoutePoint(e.latlng); return; } setPanel(true); });  // tap map: add route pt, else hide menu
 
 // ---- Esri dynamic MapServer as tiles (renders all visible layers via /export) ----
 function esriExportLayer(base, attr){
@@ -1940,6 +1955,7 @@ document.getElementById('gpschk').addEventListener('change',e=>{
         (hdg!=null?' '+Math.round(hdg)+'°':''),{direction:'top'});
       if(firstFix){ map.setView(ll,13); firstFix=false; }
       else if(document.getElementById('followchk').checked){ map.panTo(ll); }
+      recordFix(c);
     }, err=>{ alert('GPS error: '+err.message+'\n(Location needs an HTTPS page + permission.)');
        e.target.checked=false; }, {enableHighAccuracy:true,maximumAge:2000,timeout:20000});
   } else {
@@ -2047,4 +2063,58 @@ const tog=(id,layer)=>document.getElementById(id).addEventListener('change',e=>{
 tog('ezchk',ezLayer); tog('finchk',finLayer); tog('skchk',seamark); tog('mkchk',markLayer);
 ezpts.forEach(p=>bounds.push(p));
 map.fitBounds(bounds,{padding:[30,30]});
+
+// ---- Toggle ALL courses on/off (per-course boxes still work individually) ----
+function setAllCourses(on){
+  document.querySelectorAll('#list input[type=checkbox]').forEach((cb,i)=>{
+    cb.checked=on; const code=D.courses[i].code;
+    on? courseLayers[code].addTo(map) : map.removeLayer(courseLayers[code]);
+  });
+}
+document.getElementById('allcourses').onclick=()=>setAllCourses(true);
+document.getElementById('nocourses').onclick =()=>setAllCourses(false);
+
+// ---- Record GPS track (auto-saves to this device via localStorage) ----
+let trackPts=[], trackLine=null; const TKEY='solotwin_track';
+function ensureTrackLine(){ if(!trackLine) trackLine=L.polyline([],{color:'#ff8800',weight:3,opacity:.85}).addTo(map); }
+function recordFix(c){
+  if(!document.getElementById('recchk').checked) return;
+  trackPts.push([+c.latitude.toFixed(6),+c.longitude.toFixed(6),new Date().toISOString()]);
+  ensureTrackLine(); trackLine.addLatLng([c.latitude,c.longitude]);
+  try{ localStorage.setItem(TKEY,JSON.stringify(trackPts)); }catch(e){}
+}
+(function(){ try{ trackPts=JSON.parse(localStorage.getItem(TKEY)||'[]'); }catch(e){ trackPts=[]; }
+  if(trackPts.length){ ensureTrackLine(); trackLine.setLatLngs(trackPts.map(p=>[p[0],p[1]])); } })();
+document.getElementById('clrtrack').onclick=()=>{ if(!confirm('Erase the recorded track?')) return;
+  trackPts=[]; if(trackLine){ map.removeLayer(trackLine); trackLine=null; } try{ localStorage.removeItem(TKEY); }catch(e){} };
+
+// ---- Draw a route by tapping the map ----
+const routeMarks=L.layerGroup().addTo(map);
+function addRoutePoint(ll){ routePts.push(ll); drawRoute(); }
+function drawRoute(){
+  if(!routeLine) routeLine=L.polyline([],{color:'#0a7d2c',weight:3,dashArray:'6 4'}).addTo(map);
+  routeLine.setLatLngs(routePts); routeMarks.clearLayers();
+  routePts.forEach(p=>L.circleMarker(p,{radius:4,color:'#0a7d2c',fillColor:'#fff',fillOpacity:1,weight:2}).addTo(routeMarks));
+  let d=0; for(let i=1;i<routePts.length;i++) d+=map.distance(routePts[i-1],routePts[i]);
+  document.getElementById('routeinfo').textContent = routePts.length? routePts.length+' pts · '+(d/1852).toFixed(2)+' NM' : '';
+}
+document.getElementById('drawchk').addEventListener('change',e=>{ drawMode=e.target.checked;
+  map.getContainer().style.cursor=drawMode?'crosshair':''; });
+document.getElementById('undobtn').onclick =()=>{ routePts.pop(); drawRoute(); };
+document.getElementById('clrroute').onclick=()=>{ routePts=[]; drawRoute(); };
+
+// ---- Save track / route to a .gpx file ----
+function downloadGPX(name,pts,isRoute){
+  const inner= isRoute
+    ? '<rte><name>'+name+'</name>'+pts.map(p=>'<rtept lat="'+p[0]+'" lon="'+p[1]+'"></rtept>').join('')+'</rte>'
+    : '<trk><name>'+name+'</name><trkseg>'+pts.map(p=>'<trkpt lat="'+p[0]+'" lon="'+p[1]+'">'+(p[2]?'<time>'+p[2]+'</time>':'')+'</trkpt>').join('')+'</trkseg></trk>';
+  const gpx='<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.1" creator="solotwin" xmlns="http://www.topografix.com/GPX/1/1">'+inner+'</gpx>';
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([gpx],{type:'application/gpx+xml'}));
+  a.download=name+'.gpx'; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),3000);
+}
+document.getElementById('savetrack').onclick=()=>{ if(!trackPts.length){ alert('No track recorded yet.'); return; }
+  downloadGPX('solotwin_track',trackPts,false); };
+document.getElementById('saveroute').onclick=()=>{ if(routePts.length<2){ alert('Tap the map to add at least 2 route points.'); return; }
+  downloadGPX('solotwin_route',routePts.map(p=>[p.lat.toFixed(6),p.lng.toFixed(6)]),true); };
 </script></body></html>
