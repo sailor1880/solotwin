@@ -729,7 +729,9 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <div style="margin-top:2px;display:flex;gap:4px;flex-wrap:wrap">
    <button id="undobtn" style="font-size:11px">Undo pt</button>
    <button id="clrroute" style="font-size:11px">Clear route</button>
+   <button id="savekeep" style="font-size:11px">Save &amp; keep</button>
    <button id="saveroute" style="font-size:11px">Save route.gpx</button></div>
+ <div id="savedlist" style="font-size:11px;margin-top:2px"></div>
  <div style="margin-top:3px;display:flex;gap:4px;flex-wrap:wrap">
    <button id="savetrack" style="font-size:11px">Save track.gpx</button>
    <button id="clrtrack" style="font-size:11px">Clear track</button></div>
@@ -2195,6 +2197,30 @@ document.getElementById('savetrack').onclick=()=>{ if(!trackPts.length){ alert('
   downloadGPX('solotwin_track',trackPts,false); };
 document.getElementById('saveroute').onclick=()=>{ if(routePts.length<2){ alert('Tap the map to add at least 2 route points.'); return; }
   downloadGPX('solotwin_route',routePts.map(p=>[p.lat.toFixed(6),p.lng.toFixed(6)]),true); };
+
+// ---- Save & keep: commit the drawn route as a named, persistent, displayed route ----
+let savedRoutes=[]; const SKEY='sa_saved'; const SCOL=['#0a7d2c','#b5179e','#f77f00','#3a0ca3','#006d77'];
+const savedLayer=L.layerGroup().addTo(map);
+function persistSaved(){ try{ localStorage.setItem(SKEY,JSON.stringify(savedRoutes.map(r=>({name:r.name,pts:r.pts,on:r.on!==false})))); }catch(e){} }
+function drawSaved(){ savedLayer.clearLayers();
+  savedRoutes.forEach((r,i)=>{ if(r.on===false) return; const col=SCOL[i%SCOL.length];
+    L.polyline(r.pts,{color:col,weight:3}).bindPopup('Saved route: '+r.name).addTo(savedLayer);
+    r.pts.forEach(p=>L.circleMarker(p,{radius:3,color:col,fillColor:'#fff',fillOpacity:1,weight:1.5}).addTo(savedLayer)); }); }
+function renderSaved(){ const box=document.getElementById('savedlist'); box.innerHTML='';
+  savedRoutes.forEach((r,i)=>{ const col=SCOL[i%SCOL.length]; const d=document.createElement('div');
+    d.innerHTML='<label><input type="checkbox" '+(r.on!==false?'checked':'')+' data-i="'+i+'"> '+
+      '<span style="color:'+col+'">&#9646;</span> '+r.name+'</label> <a href="#" data-del="'+i+'" style="color:#c00">✕</a>';
+    box.appendChild(d); });
+  box.querySelectorAll('input[type=checkbox]').forEach(cb=>cb.addEventListener('change',e=>{
+    savedRoutes[+e.target.dataset.i].on=e.target.checked; drawSaved(); persistSaved(); }));
+  box.querySelectorAll('a[data-del]').forEach(a=>a.addEventListener('click',ev=>{ ev.preventDefault();
+    savedRoutes.splice(+a.dataset.del,1); drawSaved(); renderSaved(); persistSaved(); })); }
+document.getElementById('savekeep').onclick=()=>{ if(routePts.length<2){ alert('Draw at least 2 points first.'); return; }
+  const name=prompt('Name this route:','Route '+(savedRoutes.length+1)); if(name===null) return;
+  savedRoutes.push({name:name||('Route '+(savedRoutes.length+1)), pts:routePts.map(p=>[p.lat,p.lng]), on:true});
+  drawSaved(); renderSaved(); persistSaved(); routePts=[]; drawRoute(); };
+(function(){ try{ savedRoutes=JSON.parse(localStorage.getItem(SKEY)||'[]'); }catch(e){ savedRoutes=[]; }
+  drawSaved(); renderSaved(); })();
 
 // ---- Other races: import GPX -> per-route (course) checkboxes; honors Reverse toggle ----
 let racesRaw=[]; const RKEY='sa_races';
