@@ -1783,7 +1783,7 @@ const seamark = L.tileLayer('https://tiles.openseamap.org/seamark/{z}/{x}/{y}.pn
    {maxZoom:18,opacity:1}).addTo(map);
 
 // ---- Weather: Open-Meteo (keyless) wind & current arrows, grid follows the map view ----
-let PTS=[], latCSV='', lonCSV='';
+let PTS=[], latCSV='', lonCSV='', GB=null;
 function buildGrid(){                 // dense grid across the CURRENT view -> zoom in = finer detail
   const b=map.getBounds(), COLS=15, ROWS=12;
   const w=b.getWest(), e=b.getEast(), s=b.getSouth(), n=b.getNorth();
@@ -1791,6 +1791,7 @@ function buildGrid(){                 // dense grid across the CURRENT view -> z
   for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++)
     PTS.push([+(n-(n-s)*r/(ROWS-1)).toFixed(4), +(w+(e-w)*c/(COLS-1)).toFixed(4)]);
   latCSV=PTS.map(p=>p[0]).join(','); lonCSV=PTS.map(p=>p[1]).join(',');
+  GB={n,s,e,w,cols:COLS,rows:ROWS};   // regular-grid metadata (row-major N->S, W->E) for the wind-flow field
 }
 let WIND=null, CUR=null, TIMES=null;
 const windLayer=L.layerGroup(), curLayer=L.layerGroup();
@@ -1886,7 +1887,7 @@ function flowData(h){
 document.getElementById('flowchk').addEventListener('change',async e=>{
   if(e.target.checked){ try{ if(!WINDFLO) await loadFlow(); setWhen();
       flowLayer=L.velocityLayer({displayValues:false,data:flowData(hour()),
-        maxVelocity:18,velocityScale:0.012,lineWidth:1.8,particleMultiplier:1/250,
+        maxVelocity:18,velocityScale:0.005,lineWidth:1.8,particleMultiplier:1/220,
         colorScale:['#8ec7ff','#4aa3ff','#3cb44b','#f0a020','#e6194b']}).addTo(map);
     }catch(err){ alert('Wind flow failed: '+err); e.target.checked=false; } }
   else if(flowLayer){ map.removeLayer(flowLayer); flowLayer=null; }
