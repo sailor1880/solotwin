@@ -710,6 +710,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <label class="fin"><input type="checkbox" id="finchk" checked> Finish line (120&deg;/300&deg;)</label>
  <label><input type="checkbox" id="skchk"> Seamarks (OpenSeaMap)</label>
  <label><input type="checkbox" id="aidschk" checked> NOAA aids &mdash; tap for info (Light List)</label>
+ <label><input type="checkbox" id="aquachk"> Aquaculture leases (RI&nbsp;DEM)</label>
  <label><input type="checkbox" id="mkchk" checked> Race marks &amp; labels</label>
  <hr><b style="font-size:12px">Weather (live &middot; no account)</b>
  <label class="wx"><input type="checkbox" id="windchk"> Wind arrows (Open-Meteo)</label>
@@ -747,7 +748,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <label><input type="checkbox" id="raceschk" checked> Show added races</label>
  <div id="racelist" style="font-size:11px;color:#555"></div>
  <button id="clrgpx" style="font-size:11px;margin-top:2px">Clear added races</button>
- <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. Current arrows are an <b>ocean model, not tidal</b> &mdash; for tidal set/drift use <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-22 18:26</span></div>
+ <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. Current arrows are an <b>ocean model, not tidal</b> &mdash; for tidal set/drift use <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-22 18:40</span></div>
 </div>
 <script>/* @preserve
  * Leaflet 1.9.4, a JS library for interactive maps. https://leafletjs.com
@@ -2373,4 +2374,19 @@ document.getElementById('aidschk').addEventListener('change',async e=>{
     catch(err){ alert('Could not load NOAA aids (aids.json): '+err); e.target.checked=false; } }
   else map.removeLayer(aidsLayer); });
 if(document.getElementById('aidschk').checked) document.getElementById('aidschk').dispatchEvent(new Event('change'));  // load aids on start (default on)
+
+// ---- Aquaculture lease areas: authoritative RI DEM / RIGIS FeatureServer (live, CORS-ok, keyless) ----
+let aquaLayer=null;
+document.getElementById('aquachk').addEventListener('change',async e=>{
+  if(e.target.checked){ try{ if(!aquaLayer){
+      const u='https://risegis.ri.gov/hosting/rest/services/RIDEM/Marine_Fisheries_Map_Layers/FeatureServer/15/query'+
+        '?where=1%3D1&outFields=Name,Acres,Purpose,Restric,Notes&outSR=4326&f=geojson&resultRecordCount=2000';
+      const gj=await (await fetch(u)).json();
+      aquaLayer=L.geoJSON(gj,{style:{color:'#7a5c00',weight:1,fillColor:'#e0b000',fillOpacity:.3},
+        onEachFeature:(f,l)=>{ const p=f.properties||{}; l.bindPopup('<b>Aquaculture lease</b>'+
+          (p.Name?'<br>'+p.Name:'')+(p.Acres?'<br>'+p.Acres+' ac':'')+(p.Purpose?'<br>'+p.Purpose:'')+
+          (p.Restric?'<br>'+p.Restric:'')); }}); }
+    aquaLayer.addTo(map); }
+    catch(err){ alert('Could not load aquaculture layer (RI DEM): '+err); e.target.checked=false; } }
+  else if(aquaLayer) map.removeLayer(aquaLayer); });
 </script></body></html>
