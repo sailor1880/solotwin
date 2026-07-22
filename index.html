@@ -2,7 +2,8 @@
 <html><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>SOLO/TWIN 2026 Courses</title>
+<meta name="apple-mobile-web-app-title" content="Sailing Assistant">
+<title>Sailing Assistant</title>
 <style>/* required styles */
 
 .leaflet-pane,
@@ -693,10 +694,10 @@ svg.leaflet-image-layer.leaflet-interactive path {
 </div>
 <button id="collapse" title="Show/hide panel">&#9776;</button>
 <div class="panel" id="panel">
- <h3>SOLO/TWIN 2026 Courses</h3>
+ <h3>Sailing Assistant</h3>
  <b style="font-size:12px">Chart base</b>
  <div id="bases"></div><hr>
- <div style="font-size:12px;margin-bottom:2px"><b>Courses</b>
+ <div style="font-size:12px;margin-bottom:2px"><b>SOLO/TWIN courses</b>
    <button id="allcourses" style="font-size:11px">all on</button>
    <button id="nocourses" style="font-size:11px">all off</button></div>
  <div id="list"></div>
@@ -730,6 +731,12 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <div style="margin-top:3px;display:flex;gap:4px;flex-wrap:wrap">
    <button id="savetrack" style="font-size:11px">Save track.gpx</button>
    <button id="clrtrack" style="font-size:11px">Clear track</button></div>
+ <hr><b style="font-size:12px">Other races (GPX)</b>
+ <label style="font-size:12px;display:block;margin:2px 0">Add race:
+   <input type="file" id="gpxfile" accept=".gpx,application/gpx+xml" style="font-size:11px;width:100%"></label>
+ <label><input type="checkbox" id="raceschk" checked> Show added races</label>
+ <div id="racelist" style="font-size:11px;color:#555"></div>
+ <button id="clrgpx" style="font-size:11px;margin-top:2px">Clear added races</button>
  <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. Current arrows are an <b>ocean model, not tidal</b> &mdash; for tidal set/drift use <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>.</div>
 </div>
 <script>/* @preserve
@@ -2118,4 +2125,43 @@ document.getElementById('savetrack').onclick=()=>{ if(!trackPts.length){ alert('
   downloadGPX('solotwin_track',trackPts,false); };
 document.getElementById('saveroute').onclick=()=>{ if(routePts.length<2){ alert('Tap the map to add at least 2 route points.'); return; }
   downloadGPX('solotwin_route',routePts.map(p=>[p.lat.toFixed(6),p.lng.toFixed(6)]),true); };
+
+// ---- Other races: import GPX (routes/tracks/waypoints), persists on this device ----
+const racesLayer=L.layerGroup().addTo(map);
+let racesRaw=[]; const RKEY='sa_races';
+const RCOL=['#8e44ad','#d35400','#16a085','#2c3e50','#0088aa'];
+function parseGPX(text,name,idx){
+  const xml=new DOMParser().parseFromString(text,'application/xml');
+  if(xml.getElementsByTagName('parsererror').length) throw new Error('not valid GPX/XML');
+  const col=RCOL[idx%RCOL.length], b=[];
+  const tag=(el,t)=>Array.from(el.getElementsByTagNameNS('*',t));
+  const nm=el=>{ const x=tag(el,'name')[0]; return x?x.textContent:''; };
+  const collect=els=>els.map(p=>{ const la=+p.getAttribute('lat'),lo=+p.getAttribute('lon'); b.push([la,lo]); return [la,lo]; });
+  const line=(pts,label)=>{ if(pts.length>1) L.polyline(pts,{color:col,weight:3}).bindPopup(label||name).addTo(racesLayer); };
+  tag(xml,'rte').forEach(r=>line(collect(tag(r,'rtept')),nm(r)));
+  tag(xml,'trk').forEach(t=>{ let pts=[]; tag(t,'trkseg').forEach(sg=>pts=pts.concat(collect(tag(sg,'trkpt')))); line(pts,nm(t)); });
+  tag(xml,'wpt').forEach(w=>{ const la=+w.getAttribute('lat'),lo=+w.getAttribute('lon'); b.push([la,lo]);
+    L.circleMarker([la,lo],{radius:5,color:col,fillColor:'#fff',fillOpacity:1,weight:2})
+     .bindPopup(nm(w)||name).bindTooltip(nm(w),{direction:'right'}).addTo(racesLayer); });
+  return b;
+}
+function renderRaceList(){ document.getElementById('racelist').innerHTML=
+  racesRaw.map((r,i)=>'<span style="color:'+RCOL[i%RCOL.length]+'">&#9646;</span> '+r.name).join('<br>'); }
+function addRace(text,name,idx,fit){ try{ const b=parseGPX(text,name,idx);
+    if(fit&&b.length) map.fitBounds(b,{padding:[30,30]}); }
+  catch(e){ alert('Could not read GPX "'+name+'": '+e.message); } }
+function saveRaces(){ try{ localStorage.setItem(RKEY,JSON.stringify(racesRaw)); }catch(e){ alert('Too large to save on device; it will show until reload.'); } }
+document.getElementById('gpxfile').addEventListener('change',ev=>{
+  const f=ev.target.files[0]; if(!f) return;
+  const rd=new FileReader();
+  rd.onload=()=>{ racesRaw.push({name:f.name,text:rd.result}); saveRaces();
+    addRace(rd.result,f.name,racesRaw.length-1,true); renderRaceList();
+    if(!document.getElementById('raceschk').checked){ document.getElementById('raceschk').checked=true; racesLayer.addTo(map);} };
+  rd.readAsText(f); ev.target.value='';
+});
+document.getElementById('clrgpx').onclick=()=>{ if(!racesRaw.length) return; if(!confirm('Remove all added races?')) return;
+  racesLayer.clearLayers(); racesRaw=[]; try{ localStorage.removeItem(RKEY); }catch(e){} renderRaceList(); };
+document.getElementById('raceschk').addEventListener('change',e=>{ e.target.checked?racesLayer.addTo(map):map.removeLayer(racesLayer); });
+(function(){ try{ racesRaw=JSON.parse(localStorage.getItem(RKEY)||'[]'); }catch(e){ racesRaw=[]; }
+  racesRaw.forEach((r,i)=>addRace(r.text,r.name,i,false)); renderRaceList(); })();
 </script></body></html>
