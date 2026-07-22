@@ -681,8 +681,8 @@ svg.leaflet-image-layer.leaflet-interactive path {
    border-radius:6px;box-shadow:0 1px 5px rgba(0,0,0,.4);font-size:20px;width:38px;height:38px;
    display:none;cursor:pointer}
  .leg span{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:3px;vertical-align:middle}
- @media (max-width:640px){ .panel{width:70vw;max-width:270px;font-size:14px}
-   .panel.hidden{display:none} #collapse{display:block} }
+ .panel.hidden{display:none}
+ @media (max-width:640px){ .panel{width:70vw;max-width:270px;font-size:14px} }
 </style></head>
 <body>
 <div id="map"></div>
@@ -699,7 +699,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <hr><b style="font-size:12px">Weather (live &middot; no account)</b>
  <label class="wx"><input type="checkbox" id="windchk"> Wind arrows (Open-Meteo)</label>
  <label class="wx"><input type="checkbox" id="curchk"> Current arrows (model)</label>
- <label class="wx"><input type="checkbox" id="radarchk"> Rain radar (RainViewer)</label>
+ <label class="wx"><input type="checkbox" id="radarchk"> Rain radar (NEXRAD)</label>
  <div id="tbox" style="font-size:11px;margin:3px 0;display:none">
    <span id="when">&nbsp;</span><br><input type="range" id="thr" min="0" max="47" value="0" style="width:100%">
    <div class="leg" style="margin-top:3px"><span style="background:#2c7fb8"></span>&lt;8
@@ -721,8 +721,10 @@ svg.leaflet-image-layer.leaflet-interactive path {
 <script>
 const D = {"marks": {"CH": {"lat": 41.46217611111111, "lon": -71.36291999999999, "llnr": "17795", "name": "Castle Hill Light", "short": "Castle Hill Light (Finish, east end of line)"}, "R4": {"lat": 41.14548805555555, "lon": -71.62246888888889, "llnr": "19735", "name": "Southwest Point Lighted Whistle Buoy 4", "short": "R \"4\" Fl R 6s Whistle"}, "R2": {"lat": 41.307692499999995, "lon": -71.47245333333333, "llnr": "19460", "name": "Point Judith Lighted Buoy 2", "short": "R \"2\" Fl R 4s Whistle"}, "R32": {"lat": 41.36804194444444, "lon": -70.95697277777778, "llnr": "15613", "name": "Vineyard Sound Entrance Lighted Whistle Buoy 32", "short": "R \"32\" Fl R 2.5s Whistle"}, "G5": {"lat": 41.210170833333336, "lon": -71.53385805555556, "llnr": "19685", "name": "Block Island Northeast Whistle Buoy 5", "short": "G \"5\" Whistle"}, "BB": {"lat": 41.39698666666666, "lon": -71.03468805555555, "llnr": "15985", "name": "Buzzards Bay Entrance Light", "short": "Buzzards Bay Entrance Light Fl W 2.5s"}, "NB": {"lat": 41.38334277777778, "lon": -71.38930055555556, "llnr": "17675", "name": "Narragansett Bay Entrance Lighted Whistle Buoy (Mo(A)W, AIS MMSI 993672153)", "short": "RW \"NB\" Mo(A)W"}, "G1BI": {"lat": 41.25731305555556, "lon": -71.57593277777778, "llnr": "19475", "name": "Block Island North Reef Lighted Bell Buoy 1BI", "short": "G \"1BI\" Fl G 4s Bell"}, "VM1": {"lat": 40.63333333333333, "lon": -71.61666666666666, "llnr": null, "name": "Virtual Mark 1 (SI: 40-38-00N / 071-37-00W)", "short": "Virtual Mark 1"}, "VM2": {"lat": 40.71666666666667, "lon": -71.18333333333334, "llnr": null, "name": "Virtual Mark 2 (SI: 40-43-00N / 071-11-00W)", "short": "Virtual Mark 2"}, "START": {"lat": 41.4915, "lon": -71.336, "llnr": null, "name": "Start area - RC-set line west of Goat Island (SI 7.1); approximate, not a fixed aid", "short": "START (W of Goat Island)"}}, "courses": [{"code": "A", "dist": "120 NM", "seq": ["START", "R4", "VM1", "VM2", "R2", "CH"], "rounding": "R4(p) VM1(p) VM2(p) R2(s)", "calc": 123.9, "color": "#e6194b"}, {"code": "B", "dist": "103 NM", "seq": ["START", "R4", "R32", "G5", "CH"], "rounding": "R4(p) R32(p) G5(s)", "calc": 102.0, "color": "#f58231"}, {"code": "C", "dist": "93 NM", "seq": ["START", "R4", "R32", "R2", "CH"], "rounding": "R4(p) R32(p) R2(s)", "calc": 91.4, "color": "#3cb44b"}, {"code": "D", "dist": "77.2 NM", "seq": ["START", "R4", "BB", "NB", "CH"], "rounding": "R4(p) BB(p) NB(s)", "calc": 75.9, "color": "#4363d8"}, {"code": "E", "dist": "70 NM", "seq": ["START", "G5", "R32", "NB", "CH"], "rounding": "G5(p) R32(p) NB(s)", "calc": 71.2, "color": "#911eb4"}, {"code": "F", "dist": "65 NM", "seq": ["START", "G1BI", "BB", "NB", "CH"], "rounding": "G1BI(p) BB(p) NB(s)  [NOR: 64.9 NM]", "calc": 64.4, "color": "#008080"}, {"code": "G", "dist": "60 NM", "seq": ["START", "R2", "R32", "NB", "CH"], "rounding": "R2(p) R32(p) NB(s)", "calc": 60.5, "color": "#e6b800"}], "ez": [{"id": "EZ01", "lat": 41.15833333333333, "lon": -71.26666666666667}, {"id": "EZ02", "lat": 41.23166666666667, "lon": -71.175}, {"id": "EZ03", "lat": 41.23166666666667, "lon": -71.05833333333334}, {"id": "EZ04", "lat": 41.13333333333333, "lon": -70.83333333333333}, {"id": "EZ05", "lat": 41.111666666666665, "lon": -70.83166666666666}, {"id": "EZ06", "lat": 41.075, "lon": -70.94166666666666}, {"id": "EZ07", "lat": 41.071666666666665, "lon": -71.19333333333333}], "finish": {"a": [41.46217611111111, -71.36291999999999], "b": [41.46483167228598, -71.37578501769853]}};
 const map = L.map('map',{center:[41.1,-71.3],zoom:9});
-document.getElementById('collapse').addEventListener('click',()=>{
-  document.getElementById('panel').classList.toggle('hidden');});
+const panelEl=document.getElementById('panel'), collapseEl=document.getElementById('collapse');
+function setPanel(hidden){ panelEl.classList.toggle('hidden',hidden); collapseEl.style.display=hidden?'block':'none'; }
+collapseEl.addEventListener('click',()=>setPanel(false));
+map.on('click',()=>setPanel(true));                    // tap the map -> hide the menu (tap ☰ to show)
 
 // ---- Esri dynamic MapServer as tiles (renders all visible layers via /export) ----
 function esriExportLayer(base, attr){
@@ -755,19 +757,26 @@ encOnline.addTo(map);                               // default: renderer confirm
 const seamark = L.tileLayer('https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png',
    {maxZoom:18,opacity:1}).addTo(map);
 
-// ---- Weather: Open-Meteo (keyless, CORS-enabled) wind & current arrows ----
-const PTS=[];
-for(let la=40.65; la<=41.55; la+=0.15)
-  for(let lo=-71.60; lo<=-70.80; lo+=0.15) PTS.push([+la.toFixed(3),+lo.toFixed(3)]);
-const latCSV=PTS.map(p=>p[0]).join(','), lonCSV=PTS.map(p=>p[1]).join(',');
+// ---- Weather: Open-Meteo (keyless) wind & current arrows, grid follows the map view ----
+let PTS=[], latCSV='', lonCSV='';
+function buildGrid(){                 // dense grid across the CURRENT view -> zoom in = finer detail
+  const b=map.getBounds(), COLS=15, ROWS=12;
+  const w=b.getWest(), e=b.getEast(), s=b.getSouth(), n=b.getNorth();
+  PTS=[];
+  for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++)
+    PTS.push([+(n-(n-s)*r/(ROWS-1)).toFixed(4), +(w+(e-w)*c/(COLS-1)).toFixed(4)]);
+  latCSV=PTS.map(p=>p[0]).join(','); lonCSV=PTS.map(p=>p[1]).join(',');
+}
 let WIND=null, CUR=null, TIMES=null;
 const windLayer=L.layerGroup(), curLayer=L.layerGroup();
+const windOn=()=>document.getElementById('windchk').checked;
+const curOn =()=>document.getElementById('curchk').checked;
 
-function arrow(deg,color){          // arrow points UP by default -> rotate to compass bearing
-  return L.divIcon({className:'',iconSize:[28,28],iconAnchor:[14,14],html:
-    `<svg width="28" height="28" viewBox="0 0 28 28" style="transform:rotate(${deg}deg)">
-       <line x1="14" y1="24" x2="14" y2="6" stroke="${color}" stroke-width="2"/>
-       <polygon points="14,2 9,11 19,11" fill="${color}"/></svg>`});
+function arrow(deg,color){            // arrow points UP by default -> rotate to compass bearing
+  return L.divIcon({className:'',iconSize:[22,22],iconAnchor:[11,11],html:
+    `<svg width="22" height="22" viewBox="0 0 22 22" style="transform:rotate(${deg}deg)">
+       <line x1="11" y1="19" x2="11" y2="5" stroke="${color}" stroke-width="2"/>
+       <polygon points="11,2 7,10 15,10" fill="${color}"/></svg>`});
 }
 const spdColor=s=> s<8?'#2c7fb8': s<16?'#41ab5d': s<22?'#f0a020':'#e6194b';
 const hour=()=>+document.getElementById('thr').value;
@@ -781,9 +790,9 @@ async function loadWind(){
   TIMES=WIND[0].hourly.time; document.getElementById('thr').max=TIMES.length-1;
 }
 function drawWind(){ windLayer.clearLayers(); const h=hour();
-  WIND.forEach((w,i)=>{ const s=w.hourly.wind_speed_10m[h], d=w.hourly.wind_direction_10m[h];
+  WIND.forEach((w,i)=>{ if(!w.hourly) return; const s=w.hourly.wind_speed_10m[h], d=w.hourly.wind_direction_10m[h];
     if(s==null) return;
-    L.marker(PTS[i],{icon:arrow((d+180)%360,spdColor(s)),interactive:true,keyboard:false})
+    L.marker(PTS[i],{icon:arrow((d+180)%360,spdColor(s)),keyboard:false})
       .bindTooltip(Math.round(s)+' kt',{direction:'top'}).addTo(windLayer); }); }
 
 async function loadCur(){
@@ -792,65 +801,91 @@ async function loadCur(){
   const j=await (await fetch(u)).json(); CUR=Array.isArray(j)?j:[j];
   if(!TIMES){TIMES=CUR[0].hourly.time; document.getElementById('thr').max=TIMES.length-1;} }
 function drawCur(){ curLayer.clearLayers(); const h=hour();
-  CUR.forEach((w,i)=>{ const v=w.hourly.ocean_current_velocity[h], d=w.hourly.ocean_current_direction[h];
+  CUR.forEach((w,i)=>{ if(!w.hourly) return; const v=w.hourly.ocean_current_velocity[h], d=w.hourly.ocean_current_direction[h];
     if(v==null||v===0) return; const kn=v*0.539957;
-    L.marker(PTS[i],{icon:arrow(d,'#7b2cbf'),interactive:true,keyboard:false})
+    L.marker(PTS[i],{icon:arrow(d,'#7b2cbf'),keyboard:false})
       .bindTooltip(kn.toFixed(1)+' kt set',{direction:'top'}).addTo(curLayer); }); }
 
-function showTbox(){ document.getElementById('tbox').style.display=
-   (document.getElementById('windchk').checked||document.getElementById('curchk').checked)?'block':'none'; }
+function showTbox(){ document.getElementById('tbox').style.display=(windOn()||curOn())?'block':'none'; }
+async function refreshWx(){           // rebuild grid for current view + refetch active layers
+  buildGrid();
+  try{ if(windOn()){ await loadWind(); drawWind(); } }catch(e){}
+  try{ if(curOn()){ await loadCur();  drawCur();  } }catch(e){}
+  setWhen();
+}
+let moveTimer=null;
+map.on('moveend',()=>{ if(!(windOn()||curOn())) return;
+  clearTimeout(moveTimer); moveTimer=setTimeout(refreshWx,500); });
 
 document.getElementById('windchk').addEventListener('change',async e=>{
-  if(e.target.checked){ try{ if(!WIND) await loadWind(); setWhen(); drawWind(); windLayer.addTo(map);}
+  if(e.target.checked){ try{ buildGrid(); await loadWind(); setWhen(); drawWind(); windLayer.addTo(map);}
     catch(err){ alert('Wind fetch failed (need internet): '+err); e.target.checked=false; } }
   else map.removeLayer(windLayer); showTbox(); });
 document.getElementById('curchk').addEventListener('change',async e=>{
-  if(e.target.checked){ try{ if(!CUR) await loadCur(); setWhen(); drawCur(); curLayer.addTo(map);}
+  if(e.target.checked){ try{ buildGrid(); await loadCur(); setWhen(); drawCur(); curLayer.addTo(map);}
     catch(err){ alert('Current model unavailable here: '+err); e.target.checked=false; } }
   else map.removeLayer(curLayer); showTbox(); });
 document.getElementById('thr').addEventListener('input',()=>{ setWhen();
-  if(document.getElementById('windchk').checked&&WIND) drawWind();
-  if(document.getElementById('curchk').checked&&CUR) drawCur(); });
+  if(windOn()&&WIND) drawWind(); if(curOn()&&CUR) drawCur(); });
 document.getElementById('windybtn').addEventListener('click',()=>{ const c=map.getCenter();
   window.open('https://www.windy.com/?'+c.lat.toFixed(3)+','+c.lng.toFixed(3)+',9,menu,,,currents','_blank'); });
 
-// ---- Rain radar (RainViewer, keyless) ----
+// ---- Rain radar: NEXRAD N0Q mosaic via Iowa State (IEM), keyless, all zooms, ~5-min updates ----
 let radarLayer=null;
-document.getElementById('radarchk').addEventListener('change',async e=>{
-  if(e.target.checked){ try{
-      const j=await (await fetch('https://api.rainviewer.com/public/weather-maps.json')).json();
-      const fr=j.radar.past[j.radar.past.length-1];
-      radarLayer=L.tileLayer(j.host+fr.path+'/256/{z}/{x}/{y}/2/1_1.png',
-        {opacity:0.6,maxNativeZoom:10,maxZoom:18,detectRetina:true,attribution:'RainViewer'}).addTo(map);
-    }catch(err){ alert('Radar unavailable: '+err); e.target.checked=false; } }
-  else if(radarLayer){ map.removeLayer(radarLayer); radarLayer=null; }
+document.getElementById('radarchk').addEventListener('change',e=>{
+  if(e.target.checked){
+    radarLayer=L.tileLayer('https://mesonet.agron.iastate.edu/cache/tile.py/1.0.0/nexrad-n0q-900913/{z}/{x}/{y}.png',
+      {opacity:0.7,maxZoom:18,attribution:'NEXRAD radar &copy; IEM / Iowa State'}).addTo(map);
+  } else if(radarLayer){ map.removeLayer(radarLayer); radarLayer=null; }
 });
 
-// ---- My position: GPS boat marker (needs HTTPS + location permission) ----
+// ---- My position: GPS boat marker + device compass (needs HTTPS + permissions) ----
 let boatMarker=null, accCircle=null, watchId=null, firstFix=true;
+let compassHdg=null, lastCoords=null;
 function boatIcon(hdg){ const r=(hdg==null||isNaN(hdg))?0:hdg;
   return L.divIcon({className:'',iconSize:[30,30],iconAnchor:[15,15],html:
    `<svg width="30" height="30" viewBox="0 0 30 30" style="transform:rotate(${r}deg)">
       <path d="M15 2 C19 9 19 21 17 27 L13 27 C11 21 11 9 15 2 Z" fill="#c1121f" stroke="#fff" stroke-width="1.5"/>
     </svg>`}); }
+function bestHdg(c){ return (compassHdg!=null)?compassHdg:(c&&c.heading!=null&&!isNaN(c.heading)?c.heading:null); }
+function onOrient(ev){                 // device compass -> point the boat where it's aimed
+  let h=null;
+  if(ev.webkitCompassHeading!=null) h=ev.webkitCompassHeading;      // iOS: true-north heading
+  else if(ev.absolute && ev.alpha!=null) h=(360-ev.alpha)%360;      // others
+  if(h!=null){ compassHdg=h; if(boatMarker) boatMarker.setIcon(boatIcon(h)); }
+}
+async function enableCompass(){        // must be called from a user gesture (the checkbox)
+  try{
+    if(typeof DeviceOrientationEvent!=='undefined' && DeviceOrientationEvent.requestPermission){
+      const p=await DeviceOrientationEvent.requestPermission();     // iOS 13+ prompt
+      if(p==='granted') window.addEventListener('deviceorientation',onOrient,true);
+    } else {
+      window.addEventListener('deviceorientationabsolute',onOrient,true);
+      window.addEventListener('deviceorientation',onOrient,true);
+    }
+  }catch(e){}
+}
 document.getElementById('gpschk').addEventListener('change',e=>{
   if(e.target.checked){
     if(!('geolocation' in navigator)){alert('Geolocation not supported here');e.target.checked=false;return;}
-    firstFix=true;
+    firstFix=true; enableCompass();
     watchId=navigator.geolocation.watchPosition(pos=>{
-      const c=pos.coords, ll=[c.latitude,c.longitude];
+      const c=pos.coords, ll=[c.latitude,c.longitude]; lastCoords=c; const hdg=bestHdg(c);
       if(!boatMarker){
-        boatMarker=L.marker(ll,{icon:boatIcon(c.heading),zIndexOffset:1000}).addTo(map);
+        boatMarker=L.marker(ll,{icon:boatIcon(hdg),zIndexOffset:1000}).addTo(map);
         accCircle=L.circle(ll,{radius:c.accuracy,color:'#c1121f',weight:1,fillOpacity:0.07}).addTo(map);
-      } else { boatMarker.setLatLng(ll).setIcon(boatIcon(c.heading)); accCircle.setLatLng(ll).setRadius(c.accuracy); }
+      } else { boatMarker.setLatLng(ll).setIcon(boatIcon(hdg)); accCircle.setLatLng(ll).setRadius(c.accuracy); }
       boatMarker.bindTooltip('You'+(c.speed?' '+(c.speed*1.943844).toFixed(1)+' kt':'')+
-        (c.heading!=null&&!isNaN(c.heading)?' '+Math.round(c.heading)+'°':''),{direction:'top'});
+        (hdg!=null?' '+Math.round(hdg)+'°':''),{direction:'top'});
       if(firstFix){ map.setView(ll,13); firstFix=false; }
       else if(document.getElementById('followchk').checked){ map.panTo(ll); }
     }, err=>{ alert('GPS error: '+err.message+'\n(Location needs an HTTPS page + permission.)');
        e.target.checked=false; }, {enableHighAccuracy:true,maximumAge:2000,timeout:20000});
   } else {
     if(watchId!=null){ navigator.geolocation.clearWatch(watchId); watchId=null; }
+    window.removeEventListener('deviceorientation',onOrient,true);
+    window.removeEventListener('deviceorientationabsolute',onOrient,true);
+    compassHdg=null;
     if(boatMarker){ map.removeLayer(boatMarker); boatMarker=null; }
     if(accCircle){ map.removeLayer(accCircle); accCircle=null; }
   }
