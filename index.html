@@ -672,7 +672,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
  .panel{position:absolute;top:8px;right:8px;z-index:1000;background:#fff;padding:8px 10px;
    border-radius:8px;box-shadow:0 1px 6px rgba(0,0,0,.4);max-height:88vh;overflow:auto;
    font-size:13px;width:225px}
- .panel h3{margin:0 0 6px;font-size:14px}
+ .panel h3{margin:0 0 6px;font-size:14px;padding-right:34px}
  .panel label{display:block;margin:3px 0;cursor:pointer}
  .sw{display:inline-block;width:22px;height:3px;vertical-align:middle;margin-right:5px}
  .ez{color:#c00;font-weight:bold}.fin{color:#009}.wx{color:#178}
@@ -680,7 +680,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
  hr{border:none;border-top:1px solid #eee;margin:6px 0}
  #collapse{position:absolute;top:8px;right:8px;z-index:1001;background:#fff;border:none;
    border-radius:6px;box-shadow:0 1px 5px rgba(0,0,0,.4);font-size:20px;width:38px;height:38px;
-   display:none;cursor:pointer}
+   display:block;cursor:pointer}
  .leg span{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:3px;vertical-align:middle}
  .panel.hidden{display:none}
  @media (max-width:640px){ .panel{width:70vw;max-width:270px;font-size:14px} }
@@ -768,7 +768,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <label><input type="checkbox" id="raceschk" checked> Show added races</label>
  <div id="racelist" style="font-size:11px;color:#555"></div>
  <button id="clrgpx" style="font-size:11px;margin-top:2px">Clear added races</button>
- <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. Current arrows are an <b>ocean model, not tidal</b> &mdash; for tidal set/drift use <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-23 07:30</span></div>
+ <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. Current arrows are an <b>ocean model, not tidal</b> &mdash; for tidal set/drift use <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-23 08:09</span></div>
 </div>
 <script>/* @preserve
  * Leaflet 1.9.4, a JS library for interactive maps. https://leafletjs.com
@@ -1784,8 +1784,8 @@ if (!window.cancelAnimationFrame) {
 const D = {"marks": {"CH": {"lat": 41.46217611111111, "lon": -71.36291999999999, "llnr": "17795", "name": "Castle Hill Light", "short": "Castle Hill Light (Finish, east end of line)"}, "R4": {"lat": 41.14548805555555, "lon": -71.62246888888889, "llnr": "19735", "name": "Southwest Point Lighted Whistle Buoy 4", "short": "R \"4\" Fl R 6s Whistle"}, "R2": {"lat": 41.307692499999995, "lon": -71.47245333333333, "llnr": "19460", "name": "Point Judith Lighted Buoy 2", "short": "R \"2\" Fl R 4s Whistle"}, "R32": {"lat": 41.36804194444444, "lon": -70.95697277777778, "llnr": "15613", "name": "Vineyard Sound Entrance Lighted Whistle Buoy 32", "short": "R \"32\" Fl R 2.5s Whistle"}, "G5": {"lat": 41.210170833333336, "lon": -71.53385805555556, "llnr": "19685", "name": "Block Island Northeast Whistle Buoy 5", "short": "G \"5\" Whistle"}, "BB": {"lat": 41.39698666666666, "lon": -71.03468805555555, "llnr": "15985", "name": "Buzzards Bay Entrance Light", "short": "Buzzards Bay Entrance Light Fl W 2.5s"}, "NB": {"lat": 41.38334277777778, "lon": -71.38930055555556, "llnr": "17675", "name": "Narragansett Bay Entrance Lighted Whistle Buoy (Mo(A)W, AIS MMSI 993672153)", "short": "RW \"NB\" Mo(A)W"}, "G1BI": {"lat": 41.25731305555556, "lon": -71.57593277777778, "llnr": "19475", "name": "Block Island North Reef Lighted Bell Buoy 1BI", "short": "G \"1BI\" Fl G 4s Bell"}, "VM1": {"lat": 40.63333333333333, "lon": -71.61666666666666, "llnr": null, "name": "Virtual Mark 1 (SI: 40-38-00N / 071-37-00W)", "short": "Virtual Mark 1"}, "VM2": {"lat": 40.71666666666667, "lon": -71.18333333333334, "llnr": null, "name": "Virtual Mark 2 (SI: 40-43-00N / 071-11-00W)", "short": "Virtual Mark 2"}, "START": {"lat": 41.4915, "lon": -71.336, "llnr": null, "name": "Start area - RC-set line west of Goat Island (SI 7.1); approximate, not a fixed aid", "short": "START (W of Goat Island)"}}, "courses": [{"code": "A", "dist": "120 NM", "seq": ["START", "R4", "VM1", "VM2", "R2", "CH"], "rounding": "R4(p) VM1(p) VM2(p) R2(s)", "calc": 123.9, "color": "#e6194b"}, {"code": "B", "dist": "103 NM", "seq": ["START", "R4", "R32", "G5", "CH"], "rounding": "R4(p) R32(p) G5(s)", "calc": 102.0, "color": "#f58231"}, {"code": "C", "dist": "93 NM", "seq": ["START", "R4", "R32", "R2", "CH"], "rounding": "R4(p) R32(p) R2(s)", "calc": 91.4, "color": "#3cb44b"}, {"code": "D", "dist": "77.2 NM", "seq": ["START", "R4", "BB", "NB", "CH"], "rounding": "R4(p) BB(p) NB(s)", "calc": 75.9, "color": "#4363d8"}, {"code": "E", "dist": "70 NM", "seq": ["START", "G5", "R32", "NB", "CH"], "rounding": "G5(p) R32(p) NB(s)", "calc": 71.2, "color": "#911eb4"}, {"code": "F", "dist": "65 NM", "seq": ["START", "G1BI", "BB", "NB", "CH"], "rounding": "G1BI(p) BB(p) NB(s)  [NOR: 64.9 NM]", "calc": 64.4, "color": "#008080"}, {"code": "G", "dist": "60 NM", "seq": ["START", "R2", "R32", "NB", "CH"], "rounding": "R2(p) R32(p) NB(s)", "calc": 60.5, "color": "#e6b800"}], "ez": [{"id": "EZ01", "lat": 41.15833333333333, "lon": -71.26666666666667}, {"id": "EZ02", "lat": 41.23166666666667, "lon": -71.175}, {"id": "EZ03", "lat": 41.23166666666667, "lon": -71.05833333333334}, {"id": "EZ04", "lat": 41.13333333333333, "lon": -70.83333333333333}, {"id": "EZ05", "lat": 41.111666666666665, "lon": -70.83166666666666}, {"id": "EZ06", "lat": 41.075, "lon": -70.94166666666666}, {"id": "EZ07", "lat": 41.071666666666665, "lon": -71.19333333333333}], "finish": {"a": [41.46217611111111, -71.36291999999999], "b": [41.46483167228598, -71.37578501769853]}};
 const map = L.map('map',{center:[41.1,-71.3],zoom:9});
 const panelEl=document.getElementById('panel'), collapseEl=document.getElementById('collapse');
-function setPanel(hidden){ panelEl.classList.toggle('hidden',hidden); collapseEl.style.display=hidden?'block':'none'; }
-collapseEl.addEventListener('click',()=>setPanel(false));
+function setPanel(hidden){ panelEl.classList.toggle('hidden',hidden); }
+collapseEl.addEventListener('click',()=>setPanel(!panelEl.classList.contains('hidden')));
 let drawMode=false, markMode=false, coordMode=false, routePts=[], routeLine=null;
 function showCoord(ll){ const s=ll.lat.toFixed(6)+', '+ll.lng.toFixed(6);
   L.popup().setLatLng(ll).setContent('<b>'+s+'</b><br><a href="#" onclick="navigator.clipboard&&navigator.clipboard.writeText(\''+s+'\');this.textContent=\'\\u2713 copied\';return false;">copy</a>').openOn(map); }
@@ -2152,10 +2152,11 @@ document.getElementById('revchk').addEventListener('change',()=>{ redrawCourses(
 document.getElementById('twinchk').addEventListener('change',e=>{
   const on=e.target.checked;
   document.querySelectorAll('#list input[type=checkbox]').forEach((cb,i)=>{
-    const lyr=courseLayers[D.courses[i].code];
+    const lyr=courseLayers[D.courses[i].code]; if(!lyr) return;
     (on && cb.checked)? lyr.addTo(map) : map.removeLayer(lyr);
   });
-  const sync=(id,layer)=>{ (on && document.getElementById(id).checked)? layer.addTo(map) : map.removeLayer(layer); };
+  const sync=(id,layer)=>{ const el=document.getElementById(id); if(!layer||!el) return;
+    (on && el.checked)? layer.addTo(map) : map.removeLayer(layer); };
   sync('mkchk',markLayer); sync('ezchk',ezLayer); sync('finchk',finLayer); saveView();
 });
 function restoreView(){ let v; try{ v=JSON.parse(localStorage.getItem('sa_view')||'null'); }catch(e){} if(!v) return;
