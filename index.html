@@ -2,7 +2,13 @@
 <html><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Sailing Assistant">
+<meta name="theme-color" content="#0b3d66">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="icon-192.png">
 <title>Sailing Assistant</title>
 <style>/* required styles */
 
@@ -698,7 +704,9 @@ svg.leaflet-image-layer.leaflet-interactive path {
 <div class="panel" id="panel">
  <h3>Sailing Assistant</h3>
  <b style="font-size:12px">Chart base</b>
- <div id="bases"></div><hr>
+ <div id="bases"></div>
+ <button id="offlinebtn" style="font-size:11px;width:100%;margin:3px 0;cursor:pointer">&#11015; Save chart offline (this view)</button>
+ <div id="offlinemsg" style="font-size:11px;color:#0a7d2c;min-height:12px"></div><hr>
  <b style="font-size:12px">Additional chart layers</b>
  <label><input type="checkbox" id="skchk"> Seamarks (OpenSeaMap)</label>
  <label><input type="checkbox" id="aidschk" checked> NOAA aids &mdash; tap for info (Light List)</label>
@@ -769,7 +777,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <label><input type="checkbox" id="raceschk" checked> Show added races</label>
  <div id="racelist" style="font-size:11px;color:#555"></div>
  <button id="clrgpx" style="font-size:11px;margin-top:2px">Clear added races</button>
- <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. <b>Current flow</b> blends NOAA tidal-current stations (in-bay) with an ocean model (offshore), tied to the time slider; for exact set/drift also see <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-23 08:13</span></div>
+ <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. <b>Current flow</b> blends NOAA tidal-current stations (in-bay) with an ocean model (offshore), tied to the time slider; for exact set/drift also see <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-23 09:15</span></div>
 </div>
 <script>/* @preserve
  * Leaflet 1.9.4, a JS library for interactive maps. https://leafletjs.com
@@ -2600,6 +2608,30 @@ document.getElementById('aidschk').addEventListener('change',async e=>{
     catch(err){ alert('Could not load NOAA aids (aids.json): '+err); e.target.checked=false; } }
   else map.removeLayer(aidsLayer); });
 if(document.getElementById('aidschk').checked) document.getElementById('aidschk').dispatchEvent(new Event('change'));  // load aids on start (default on)
+
+// ---- PWA: register service worker + pre-cache ENC tiles for offline use ----
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+const ENC_BASE='https://gis.charttools.noaa.gov/arcgis/rest/services/MCS/ENCOnline/MapServer/exts/MaritimeChartService/MapServer';
+function encTileUrl(x,y,z){ const R=20037508.342789244,n=Math.pow(2,z),sz=2*R/n;
+  const minx=-R+x*sz,maxx=-R+(x+1)*sz,maxy=R-y*sz,miny=R-(y+1)*sz;
+  return ENC_BASE+'/export?bbox='+[minx,miny,maxx,maxy].join(',')+'&bboxSR=3857&imageSR=3857&size=256,256&dpi=96&format=png32&transparent=true&f=image'; }
+const lon2t=(lo,z)=>Math.floor((lo+180)/360*Math.pow(2,z));
+const lat2t=(la,z)=>{ const r=la*Math.PI/180; return Math.floor((1-Math.log(Math.tan(r)+1/Math.cos(r))/Math.PI)/2*Math.pow(2,z)); };
+document.getElementById('offlinebtn').addEventListener('click',async ()=>{
+  const msg=document.getElementById('offlinemsg');
+  if(!('caches' in window)){ msg.textContent='Offline storage not supported in this browser.'; return; }
+  const b=map.getBounds(), z0=Math.round(map.getZoom()), urls=[];
+  for(let z=z0; z<=Math.min(z0+1,14); z++){
+    const x0=lon2t(b.getWest(),z),x1=lon2t(b.getEast(),z),y0=lat2t(b.getNorth(),z),y1=lat2t(b.getSouth(),z);
+    for(let x=x0;x<=x1;x++) for(let y=y0;y<=y1;y++) urls.push(encTileUrl(x,y,z));
+  }
+  if(urls.length>400 && !confirm(urls.length+' chart tiles for this area - big download. Zoom in for a smaller area, or continue?')) return;
+  const c=await caches.open('sa-tiles-v1'); let done=0,ok=0;
+  msg.textContent='Saving 0/'+urls.length+'...';
+  for(const u of urls){ try{ const res=await fetch(u,{mode:'no-cors'}); await c.put(u,res); ok++; }catch(e){}
+    if(++done%8===0||done===urls.length) msg.textContent='Saving '+done+'/'+urls.length+'...'; }
+  msg.textContent='Saved '+ok+' ENC tiles offline (areas you browse are cached automatically too)';
+});
 
 // ---- Aquaculture lease areas: authoritative RI DEM / RIGIS FeatureServer (live, CORS-ok, keyless) ----
 let aquaLayer=null;
