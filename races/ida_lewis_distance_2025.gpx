@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="sailing-assistant" xmlns="http://www.topografix.com/GPX/1/1">
+  <metadata><name>Ida Lewis Distance Race 2025</name><desc>ILYC 2025 Distance Race, 20 courses (1-10 forward, 1R-10R reverse). Marks from official 2025 Course Booklet Mark Register (incl. RC Virtual Cox Ledge marks). NOT FOR NAVIGATION.</desc></metadata>
+  <wpt lat="41.49170" lon="-71.35480"><name>START (RC, S of Rose I)</name><sym>Buoy</sym></wpt>
+  <wpt lat="41.48017" lon="-71.31933"><name>Yellow Tetrahedron (SI 9.2)</name><sym>Buoy</sym></wpt>
+  <wpt lat="41.48350" lon="-71.35062"><name>G&quot;11&quot; QG Bell (E of Clingstone)</name><sym>Buoy</sym></wpt>
+  <wpt lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name><sym>Buoy</sym></wpt>
+  <wpt lat="41.38333" lon="-71.38932"><name>RW &quot;NB&quot; Mo(A)</name><sym>Buoy</sym></wpt>
+  <wpt lat="41.39700" lon="-71.03470"><name>Buzzards Bay Tower</name><sym>Buoy</sym></wpt>
+  <wpt lat="41.17433" lon="-71.95110"><name>G&quot;9&quot; Fl G 4s Gong (Cerberus Shoal)</name><sym>Buoy</sym></wpt>
+  <wpt lat="41.11600" lon="-71.71848"><name>GR &quot;BIS&quot; Fl(2+1)G 6s (ENE Montauk)</name><sym>Buoy</sym></wpt>
+  <wpt lat="41.06993" lon="-71.19810"><name>Virtual Cox Ledge #2</name><sym>Buoy</sym></wpt>
+  <wpt lat="41.07925" lon="-70.81975"><name>Virtual Cox Ledge #3</name><sym>Buoy</sym></wpt>
+  <wpt lat="41.14962" lon="-70.82800"><name>Virtual Cox Ledge #4</name><sym>Buoy</sym></wpt>
+  <wpt lat="41.10195" lon="-71.77290"><name>G&quot;1&quot; Fl G 4s Gong</name><sym>Buoy</sym></wpt>
+  <wpt lat="41.25732" lon="-71.57592"><name>G&quot;1BI&quot; Fl G 4s Bell</name><sym>Buoy</sym></wpt>
+  <wpt lat="41.29965" lon="-71.85923"><name>R&quot;2&quot; Fl R 6s Bell (S of Watch Hill)</name><sym>Buoy</sym></wpt>
+  <wpt lat="41.14988" lon="-72.14895"><name>G&quot;1Gl&quot; Fl G 4s Gong (SE Plum I)</name><sym>Buoy</sym></wpt>
+  <wpt lat="40.81672" lon="-72.47627"><name>RW &quot;SH&quot; Mo(A) Whis (S Shinnecock)</name><sym>Buoy</sym></wpt>
+  <wpt lat="41.48167" lon="-71.32685"><name>FINISH G&quot;3&quot; Bell (Goat I)</name><sym>Buoy</sym></wpt>
+  <rte><name>Course 1 (104 NM)</name>
+    <rtept lat="41.49170" lon="-71.35480"><name>START (RC, S of Rose I)</name></rtept>
+    <rtept lat="41.48350" lon="-71.35062"><name>G&quot;11&quot; QG Bell (E of Clingstone)</name></rtept>
+    <rtept lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name></rtept>
+    <rtept lat="41.17433" lon="-71.95110"><name>G&quot;9&quot; Fl G 4s Gong (Cerberus Shoal)</name></rtept>
+    <rtept lat="41.11600" lon="-71.71848"><name>GR &quot;BIS&quot; Fl(2+1)G 6s (ENE Montauk)</name></rtept>
+    <rtept lat="41.39700" lon="-71.03470"><name>Buzzards Bay Tower</name></rtept>
+    <rtept lat="41.38333" lon="-71.38932"><name>RW &quot;NB&quot; Mo(A)</name></rtept>
+    <rtept lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name></rtept>
+    <rtept lat="41.48017" lon="-71.31933"><name>Yellow Tetrahedron (SI 9.2)</name></rtept>
+    <rtept lat="41.48167" lon="-71.32685"><name>FINISH G&quot;3&quot; Bell (Goat I)</name></rtept>
+  </rte>
+  <rte><name>Course 2 (114 NM)</name>
+    <rtept lat="41.49170" lon="-71.35480"><name>START (RC, S of Rose I)</name></rtept>
+    <rtept lat="41.48350" lon="-71.35062"><name>G&quot;11&quot; QG Bell (E of Clingstone)</name></rtept>
+    <rtept lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name></rtept>
+    <rtept lat="41.11600" lon="-71.71848"><name>GR &quot;BIS&quot; Fl(2+1)G 6s (ENE Montauk)</name></rtept>
+    <rtept lat="41.06993" lon="-71.19810"><name>Virtual Cox Ledge #2</name></rtept>
+    <rtept lat="41.07925" lon="-70.81975"><name>Virtual Cox Ledge #3</name></rtept>
+    <rtept lat="41.14962" lon="-70.82800"><name>Virtual Cox Ledge #4</name></rtept>
+    <rtept lat="41.39700" lon="-71.03470"><name>Buzzards Bay Tower</name></rtept>
+    <rtept lat="41.38333" lon="-71.38932"><name>RW &quot;NB&quot; Mo(A)</name></rtept>
+    <rtept lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name></rtept>
+    <rtept lat="41.48017" lon="-71.31933"><name>Yellow Tetrahedron (SI 9.2)</name></rtept>
+    <rtept lat="41.48167" lon="-71.32685"><name>FINISH G&quot;3&quot; Bell (Goat I)</name></rtept>
+  </rte>
+  <rte><name>Course 3 (135 NM)</name>
+    <rtept lat="41.49170" lon="-71.35480"><name>START (RC, S of Rose I)</name></rtept>
+    <rtept lat="41.48350" lon="-71.35062"><name>G&quot;11&quot; QG Bell (E of Clingstone)</name></rtept>
+    <rtept lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name></rtept>
+    <rtept lat="41.38333" lon="-71.38932"><name>RW &quot;NB&quot; Mo(A)</name></rtept>
+    <rtept lat="41.39700" lon="-71.03470"><name>Buzzards Bay Tower</name></rtept>
+    <rtept lat="41.17433" lon="-71.95110"><name>G&quot;9&quot; Fl G 4s Gong (Cerberus Shoal)</name></rtept>
+    <rtept lat="41.10195" lon="-71.77290"><name>G&quot;1&quot; Fl G 4s Gong</name></rtept>
+    <rtept lat="41.39700" lon="-71.03470"><name>Buzzards Bay Tower</name></rtept>
+    <rtept lat="41.38333" lon="-71.38932"><name>RW &quot;NB&quot; Mo(A)</name></rtept>
+    <rtept lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name></rtept>
+    <rtept lat="41.48017" lon="-71.31933"><name>Yellow Tetrahedron (SI 9.2)</name></rtept>
+    <rtept lat="41.48167" lon="-71.32685"><name>FINISH G&quot;3&quot; Bell (Goat I)</name></rtept>
+  </rte>
+  <rte><name>Course 4 (150 NM)</name>
+    <rtept lat="41.49170" lon="-71.35480"><name>START (RC, S of Rose I)</name></rtept>
+    <rtept lat="41.48350" lon="-71.35062"><name>G&quot;11&quot; QG Bell (E of Clingstone)</name></rtept>
+    <rtept lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name></rtept>
+    <rtept lat="41.38333" lon="-71.38932"><name>RW &quot;NB&quot; Mo(A)</name></rtept>
+    <rtept lat="41.39700" lon="-71.03470"><name>Buzzards Bay Tower</name></rtept>
+    <rtept lat="41.10195" lon="-71.77290"><name>G&quot;1&quot; Fl G 4s Gong</name></rtept>
+    <rtept lat="41.06993" lon="-71.19810"><name>Virtual Cox Ledge #2</name></rtept>
+    <rtept lat="41.07925" lon="-70.81975"><name>Virtual Cox Ledge #3</name></rtept>
+    <rtept lat="41.14962" lon="-70.82800"><name>Virtual Cox Ledge #4</name></rtept>
+    <rtept lat="41.39700" lon="-71.03470"><name>Buzzards Bay Tower</name></rtept>
+    <rtept lat="41.38333" lon="-71.38932"><name>RW &quot;NB&quot; Mo(A)</name></rtept>
+    <rtept lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name></rtept>
+    <rtept lat="41.48017" lon="-71.31933"><name>Yellow Tetrahedron (SI 9.2)</name></rtept>
+    <rtept lat="41.48167" lon="-71.32685"><name>FINISH G&quot;3&quot; Bell (Goat I)</name></rtept>
+  </rte>
+  <rte><name>Course 5 (160 NM)</name>
+    <rtept lat="41.49170" lon="-71.35480"><name>START (RC, S of Rose I)</name></rtept>
+    <rtept lat="41.48350" lon="-71.35062"><name>G&quot;11&quot; QG Bell (E of Clingstone)</name></rtept>
+    <rtept lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name></rtept>
+    <rtept lat="41.38333" lon="-71.38932"><name>RW &quot;NB&quot; Mo(A)</name></rtept>
+    <rtept lat="41.39700" lon="-71.03470"><name>Buzzards Bay Tower</name></rtept>
+    <rtept lat="41.29965" lon="-71.85923"><name>R&quot;2&quot; Fl R 6s Bell (S of Watch Hill)</name></rtept>
+    <rtept lat="41.10195" lon="-71.77290"><name>G&quot;1&quot; Fl G 4s Gong</name></rtept>
+    <rtept lat="41.06993" lon="-71.19810"><name>Virtual Cox Ledge #2</name></rtept>
+    <rtept lat="41.07925" lon="-70.81975"><name>Virtual Cox Ledge #3</name></rtept>
+    <rtept lat="41.14962" lon="-70.82800"><name>Virtual Cox Ledge #4</name></rtept>
+    <rtept lat="41.39700" lon="-71.03470"><name>Buzzards Bay Tower</name></rtept>
+    <rtept lat="41.38333" lon="-71.38932"><name>RW &quot;NB&quot; Mo(A)</name></rtept>
+    <rtept lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name></rtept>
+    <rtept lat="41.48017" lon="-71.31933"><name>Yellow Tetrahedron (SI 9.2)</name></rtept>
+    <rtept lat="41.48167" lon="-71.32685"><name>FINISH G&quot;3&quot; Bell (Goat I)</name></rtept>
+  </rte>
+  <rte><name>Course 6 (180 NM)</name>
+    <rtept lat="41.49170" lon="-71.35480"><name>START (RC, S of Rose I)</name></rtept>
+    <rtept lat="41.48350" lon="-71.35062"><name>G&quot;11&quot; QG Bell (E of Clingstone)</name></rtept>
+    <rtept lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name></rtept>
+    <rtept lat="41.38333" lon="-71.38932"><name>RW &quot;NB&quot; Mo(A)</name></rtept>
+    <rtept lat="41.39700" lon="-71.03470"><name>Buzzards Bay Tower</name></rtept>
+    <rtept lat="41.14988" lon="-72.14895"><name>G&quot;1Gl&quot; Fl G 4s Gong (SE Plum I)</name></rtept>
+    <rtept lat="41.10195" lon="-71.77290"><name>G&quot;1&quot; Fl G 4s Gong</name></rtept>
+    <rtept lat="41.06993" lon="-71.19810"><name>Virtual Cox Ledge #2</name></rtept>
+    <rtept lat="41.07925" lon="-70.81975"><name>Virtual Cox Ledge #3</name></rtept>
+    <rtept lat="41.14962" lon="-70.82800"><name>Virtual Cox Ledge #4</name></rtept>
+    <rtept lat="41.39700" lon="-71.03470"><name>Buzzards Bay Tower</name></rtept>
+    <rtept lat="41.38333" lon="-71.38932"><name>RW &quot;NB&quot; Mo(A)</name></rtept>
+    <rtept lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name></rtept>
+    <rtept lat="41.48017" lon="-71.31933"><name>Yellow Tetrahedron (SI 9.2)</name></rtept>
+    <rtept lat="41.48167" lon="-71.32685"><name>FINISH G&quot;3&quot; Bell (Goat I)</name></rtept>
+  </rte>
+  <rte><name>Course 7 (181.5 NM)</name>
+    <rtept lat="41.49170" lon="-71.35480"><name>START (RC, S of Rose I)</name></rtept>
+    <rtept lat="41.48350" lon="-71.35062"><name>G&quot;11&quot; QG Bell (E of Clingstone)</name></rtept>
+    <rtept lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name></rtept>
+    <rtept lat="41.38333" lon="-71.38932"><name>RW &quot;NB&quot; Mo(A)</name></rtept>
+    <rtept lat="41.39700" lon="-71.03470"><name>Buzzards Bay Tower</name></rtept>
+    <rtept lat="41.29965" lon="-71.85923"><name>R&quot;2&quot; Fl R 6s Bell (S of Watch Hill)</name></rtept>
+    <rtept lat="41.14988" lon="-72.14895"><name>G&quot;1Gl&quot; Fl G 4s Gong (SE Plum I)</name></rtept>
+    <rtept lat="41.10195" lon="-71.77290"><name>G&quot;1&quot; Fl G 4s Gong</name></rtept>
+    <rtept lat="41.06993" lon="-71.19810"><name>Virtual Cox Ledge #2</name></rtept>
+    <rtept lat="41.07925" lon="-70.81975"><name>Virtual Cox Ledge #3</name></rtept>
+    <rtept lat="41.14962" lon="-70.82800"><name>Virtual Cox Ledge #4</name></rtept>
+    <rtept lat="41.39700" lon="-71.03470"><name>Buzzards Bay Tower</name></rtept>
+    <rtept lat="41.38333" lon="-71.38932"><name>RW &quot;NB&quot; Mo(A)</name></rtept>
+    <rtept lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name></rtept>
+    <rtept lat="41.48017" lon="-71.31933"><name>Yellow Tetrahedron (SI 9.2)</name></rtept>
+    <rtept lat="41.48167" lon="-71.32685"><name>FINISH G&quot;3&quot; Bell (Goat I)</name></rtept>
+  </rte>
+  <rte><name>Course 8 (205 NM)</name>
+    <rtept lat="41.49170" lon="-71.35480"><name>START (RC, S of Rose I)</name></rtept>
+    <rtept lat="41.48350" lon="-71.35062"><name>G&quot;11&quot; QG Bell (E of Clingstone)</name></rtept>
+    <rtept lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name></rtept>
+    <rtept lat="41.38333" lon="-71.38932"><name>RW &quot;NB&quot; Mo(A)</name></rtept>
+    <rtept lat="41.39700" lon="-71.03470"><name>Buzzards Bay Tower</name></rtept>
+    <rtept lat="41.29965" lon="-71.85923"><name>R&quot;2&quot; Fl R 6s Bell (S of Watch Hill)</name></rtept>
+    <rtept lat="41.10195" lon="-71.77290"><name>G&quot;1&quot; Fl G 4s Gong</name></rtept>
+    <rtept lat="40.81672" lon="-72.47627"><name>RW &quot;SH&quot; Mo(A) Whis (S Shinnecock)</name></rtept>
+    <rtept lat="41.39700" lon="-71.03470"><name>Buzzards Bay Tower</name></rtept>
+    <rtept lat="41.38333" lon="-71.38932"><name>RW &quot;NB&quot; Mo(A)</name></rtept>
+    <rtept lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name></rtept>
+    <rtept lat="41.48017" lon="-71.31933"><name>Yellow Tetrahedron (SI 9.2)</name></rtept>
+    <rtept lat="41.48167" lon="-71.32685"><name>FINISH G&quot;3&quot; Bell (Goat I)</name></rtept>
+  </rte>
+  <rte><name>Course 9 (220 NM)</name>
+    <rtept lat="41.49170" lon="-71.35480"><name>START (RC, S of Rose I)</name></rtept>
+    <rtept lat="41.48350" lon="-71.35062"><name>G&quot;11&quot; QG Bell (E of Clingstone)</name></rtept>
+    <rtept lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name></rtept>
+    <rtept lat="41.38333" lon="-71.38932"><name>RW &quot;NB&quot; Mo(A)</name></rtept>
+    <rtept lat="41.39700" lon="-71.03470"><name>Buzzards Bay Tower</name></rtept>
+    <rtept lat="40.81672" lon="-72.47627"><name>RW &quot;SH&quot; Mo(A) Whis (S Shinnecock)</name></rtept>
+    <rtept lat="41.07925" lon="-70.81975"><name>Virtual Cox Ledge #3</name></rtept>
+    <rtept lat="41.14962" lon="-70.82800"><name>Virtual Cox Ledge #4</name></rtept>
+    <rtept lat="41.39700" lon="-71.03470"><name>Buzzards Bay Tower</name></rtept>
+    <rtept lat="41.38333" lon="-71.38932"><name>RW &quot;NB&quot; Mo(A)</name></rtept>
+    <rtept lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name></rtept>
+    <rtept lat="41.48017" lon="-71.31933"><name>Yellow Tetrahedron (SI 9.2)</name></rtept>
+    <rtept lat="41.48167" lon="-71.32685"><name>FINISH G&quot;3&quot; Bell (Goat I)</name></rtept>
+  </rte>
+  <rte><name>Course 10 (234 NM)</name>
+    <rtept lat="41.49170" lon="-71.35480"><name>START (RC, S of Rose I)</name></rtept>
+    <rtept lat="41.48350" lon="-71.35062"><name>G&quot;11&quot; QG Bell (E of Clingstone)</name></rtept>
+    <rtept lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name></rtept>
+    <rtept lat="41.38333" lon="-71.38932"><name>RW &quot;NB&quot; Mo(A)</name></rtept>
+    <rtept lat="41.39700" lon="-71.03470"><name>Buzzards Bay Tower</name></rtept>
+    <rtept lat="41.25732" lon="-71.57592"><name>G&quot;1BI&quot; Fl G 4s Bell</name></rtept>
+    <rtept lat="41.29965" lon="-71.85923"><name>R&quot;2&quot; Fl R 6s Bell (S of Watch Hill)</name></rtept>
+    <rtept lat="41.11600" lon="-71.71848"><name>GR &quot;BIS&quot; Fl(2+1)G 6s (ENE Montauk)</name></rtept>
+    <rtept lat="40.81672" lon="-72.47627"><name>RW &quot;SH&quot; Mo(A) Whis (S Shinnecock)</name></rtept>
+    <rtept lat="41.07925" lon="-70.81975"><name>Virtual Cox Ledge #3</name></rtept>
+    <rtept lat="41.14962" lon="-70.82800"><name>Virtual Cox Ledge #4</name></rtept>
+    <rtept lat="41.39700" lon="-71.03470"><name>Buzzards Bay Tower</name></rtept>
+    <rtept lat="41.38333" lon="-71.38932"><name>RW &quot;NB&quot; Mo(A)</name></rtept>
+    <rtept lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name></rtept>
+    <rtept lat="41.48017" lon="-71.31933"><name>Yellow Tetrahedron (SI 9.2)</name></rtept>
+    <rtept lat="41.48167" lon="-71.32685"><name>FINISH G&quot;3&quot; Bell (Goat I)</name></rtept>
+  </rte>
+  <rte><name>Course 1R (104 NM)</name>
+    <rtept lat="41.49170" lon="-71.35480"><name>START (RC, S of Rose I)</name></rtept>
+    <rtept lat="41.48350" lon="-71.35062"><name>G&quot;11&quot; QG Bell (E of Clingstone)</name></rtept>
+    <rtept lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name></rtept>
+    <rtept lat="41.38333" lon="-71.38932"><name>RW &quot;NB&quot; Mo(A)</name></rtept>
+    <rtept lat="41.39700" lon="-71.03470"><name>Buzzards Bay Tower</name></rtept>
+    <rtept lat="41.11600" lon="-71.71848"><name>GR &quot;BIS&quot; Fl(2+1)G 6s (ENE Montauk)</name></rtept>
+    <rtept lat="41.17433" lon="-71.95110"><name>G&quot;9&quot; Fl G 4s Gong (Cerberus Shoal)</name></rtept>
+    <rtept lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name></rtept>
+    <rtept lat="41.48017" lon="-71.31933"><name>Yellow Tetrahedron (SI 9.2)</name></rtept>
+    <rtept lat="41.48167" lon="-71.32685"><name>FINISH G&quot;3&quot; Bell (Goat I)</name></rtept>
+  </rte>
+  <rte><name>Course 2R (114 NM)</name>
+    <rtept lat="41.49170" lon="-71.35480"><name>START (RC, S of Rose I)</name></rtept>
+    <rtept lat="41.48350" lon="-71.35062"><name>G&quot;11&quot; QG Bell (E of Clingstone)</name></rtept>
+    <rtept lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name></rtept>
+    <rtept lat="41.38333" lon="-71.38932"><name>RW &quot;NB&quot; Mo(A)</name></rtept>
+    <rtept lat="41.39700" lon="-71.03470"><name>Buzzards Bay Tower</name></rtept>
+    <rtept lat="41.14962" lon="-70.82800"><name>Virtual Cox Ledge #4</name></rtept>
+    <rtept lat="41.07925" lon="-70.81975"><name>Virtual Cox Ledge #3</name></rtept>
+    <rtept lat="41.06993" lon="-71.19810"><name>Virtual Cox Ledge #2</name></rtept>
+    <rtept lat="41.11600" lon="-71.71848"><name>GR &quot;BIS&quot; Fl(2+1)G 6s (ENE Montauk)</name></rtept>
+    <rtept lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name></rtept>
+    <rtept lat="41.48017" lon="-71.31933"><name>Yellow Tetrahedron (SI 9.2)</name></rtept>
+    <rtept lat="41.48167" lon="-71.32685"><name>FINISH G&quot;3&quot; Bell (Goat I)</name></rtept>
+  </rte>
+  <rte><name>Course 3R (135 NM)</name>
+    <rtept lat="41.49170" lon="-71.35480"><name>START (RC, S of Rose I)</name></rtept>
+    <rtept lat="41.48350" lon="-71.35062"><name>G&quot;11&quot; QG Bell (E of Clingstone)</name></rtept>
+    <rtept lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name></rtept>
+    <rtept lat="41.38333" lon="-71.38932"><name>RW &quot;NB&quot; Mo(A)</name></rtept>
+    <rtept lat="41.39700" lon="-71.03470"><name>Buzzards Bay Tower</name></rtept>
+    <rtept lat="41.10195" lon="-71.77290"><name>G&quot;1&quot; Fl G 4s Gong</name></rtept>
+    <rtept lat="41.17433" lon="-71.95110"><name>G&quot;9&quot; Fl G 4s Gong (Cerberus Shoal)</name></rtept>
+    <rtept lat="41.39700" lon="-71.03470"><name>Buzzards Bay Tower</name></rtept>
+    <rtept lat="41.38333" lon="-71.38932"><name>RW &quot;NB&quot; Mo(A)</name></rtept>
+    <rtept lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name></rtept>
+    <rtept lat="41.48017" lon="-71.31933"><name>Yellow Tetrahedron (SI 9.2)</name></rtept>
+    <rtept lat="41.48167" lon="-71.32685"><name>FINISH G&quot;3&quot; Bell (Goat I)</name></rtept>
+  </rte>
+  <rte><name>Course 4R (150 NM)</name>
+    <rtept lat="41.49170" lon="-71.35480"><name>START (RC, S of Rose I)</name></rtept>
+    <rtept lat="41.48350" lon="-71.35062"><name>G&quot;11&quot; QG Bell (E of Clingstone)</name></rtept>
+    <rtept lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name></rtept>
+    <rtept lat="41.38333" lon="-71.38932"><name>RW &quot;NB&quot; Mo(A)</name></rtept>
+    <rtept lat="41.39700" lon="-71.03470"><name>Buzzards Bay Tower</name></rtept>
+    <rtept lat="41.14962" lon="-70.82800"><name>Virtual Cox Ledge #4</name></rtept>
+    <rtept lat="41.07925" lon="-70.81975"><name>Virtual Cox Ledge #3</name></rtept>
+    <rtept lat="41.06993" lon="-71.19810"><name>Virtual Cox Ledge #2</name></rtept>
+    <rtept lat="41.10195" lon="-71.77290"><name>G&quot;1&quot; Fl G 4s Gong</name></rtept>
+    <rtept lat="41.39700" lon="-71.03470"><name>Buzzards Bay Tower</name></rtept>
+    <rtept lat="41.38333" lon="-71.38932"><name>RW &quot;NB&quot; Mo(A)</name></rtept>
+    <rtept lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name></rtept>
+    <rtept lat="41.48017" lon="-71.31933"><name>Yellow Tetrahedron (SI 9.2)</name></rtept>
+    <rtept lat="41.48167" lon="-71.32685"><name>FINISH G&quot;3&quot; Bell (Goat I)</name></rtept>
+  </rte>
+  <rte><name>Course 5R (160 NM)</name>
+    <rtept lat="41.49170" lon="-71.35480"><name>START (RC, S of Rose I)</name></rtept>
+    <rtept lat="41.48350" lon="-71.35062"><name>G&quot;11&quot; QG Bell (E of Clingstone)</name></rtept>
+    <rtept lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name></rtept>
+    <rtept lat="41.38333" lon="-71.38932"><name>RW &quot;NB&quot; Mo(A)</name></rtept>
+    <rtept lat="41.39700" lon="-71.03470"><name>Buzzards Bay Tower</name></rtept>
+    <rtept lat="41.14962" lon="-70.82800"><name>Virtual Cox Ledge #4</name></rtept>
+    <rtept lat="41.07925" lon="-70.81975"><name>Virtual Cox Ledge #3</name></rtept>
+    <rtept lat="41.06993" lon="-71.19810"><name>Virtual Cox Ledge #2</name></rtept>
+    <rtept lat="41.10195" lon="-71.77290"><name>G&quot;1&quot; Fl G 4s Gong</name></rtept>
+    <rtept lat="41.29965" lon="-71.85923"><name>R&quot;2&quot; Fl R 6s Bell (S of Watch Hill)</name></rtept>
+    <rtept lat="41.39700" lon="-71.03470"><name>Buzzards Bay Tower</name></rtept>
+    <rtept lat="41.38333" lon="-71.38932"><name>RW &quot;NB&quot; Mo(A)</name></rtept>
+    <rtept lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name></rtept>
+    <rtept lat="41.48017" lon="-71.31933"><name>Yellow Tetrahedron (SI 9.2)</name></rtept>
+    <rtept lat="41.48167" lon="-71.32685"><name>FINISH G&quot;3&quot; Bell (Goat I)</name></rtept>
+  </rte>
+  <rte><name>Course 6R (180 NM)</name>
+    <rtept lat="41.49170" lon="-71.35480"><name>START (RC, S of Rose I)</name></rtept>
+    <rtept lat="41.48350" lon="-71.35062"><name>G&quot;11&quot; QG Bell (E of Clingstone)</name></rtept>
+    <rtept lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name></rtept>
+    <rtept lat="41.38333" lon="-71.38932"><name>RW &quot;NB&quot; Mo(A)</name></rtept>
+    <rtept lat="41.39700" lon="-71.03470"><name>Buzzards Bay Tower</name></rtept>
+    <rtept lat="41.14962" lon="-70.82800"><name>Virtual Cox Ledge #4</name></rtept>
+    <rtept lat="41.07925" lon="-70.81975"><name>Virtual Cox Ledge #3</name></rtept>
+    <rtept lat="41.06993" lon="-71.19810"><name>Virtual Cox Ledge #2</name></rtept>
+    <rtept lat="41.10195" lon="-71.77290"><name>G&quot;1&quot; Fl G 4s Gong</name></rtept>
+    <rtept lat="41.14988" lon="-72.14895"><name>G&quot;1Gl&quot; Fl G 4s Gong (SE Plum I)</name></rtept>
+    <rtept lat="41.39700" lon="-71.03470"><name>Buzzards Bay Tower</name></rtept>
+    <rtept lat="41.38333" lon="-71.38932"><name>RW &quot;NB&quot; Mo(A)</name></rtept>
+    <rtept lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name></rtept>
+    <rtept lat="41.48017" lon="-71.31933"><name>Yellow Tetrahedron (SI 9.2)</name></rtept>
+    <rtept lat="41.48167" lon="-71.32685"><name>FINISH G&quot;3&quot; Bell (Goat I)</name></rtept>
+  </rte>
+  <rte><name>Course 7R (181.5 NM)</name>
+    <rtept lat="41.49170" lon="-71.35480"><name>START (RC, S of Rose I)</name></rtept>
+    <rtept lat="41.48350" lon="-71.35062"><name>G&quot;11&quot; QG Bell (E of Clingstone)</name></rtept>
+    <rtept lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name></rtept>
+    <rtept lat="41.38333" lon="-71.38932"><name>RW &quot;NB&quot; Mo(A)</name></rtept>
+    <rtept lat="41.39700" lon="-71.03470"><name>Buzzards Bay Tower</name></rtept>
+    <rtept lat="41.14962" lon="-70.82800"><name>Virtual Cox Ledge #4</name></rtept>
+    <rtept lat="41.07925" lon="-70.81975"><name>Virtual Cox Ledge #3</name></rtept>
+    <rtept lat="41.06993" lon="-71.19810"><name>Virtual Cox Ledge #2</name></rtept>
+    <rtept lat="41.10195" lon="-71.77290"><name>G&quot;1&quot; Fl G 4s Gong</name></rtept>
+    <rtept lat="41.14988" lon="-72.14895"><name>G&quot;1Gl&quot; Fl G 4s Gong (SE Plum I)</name></rtept>
+    <rtept lat="41.29965" lon="-71.85923"><name>R&quot;2&quot; Fl R 6s Bell (S of Watch Hill)</name></rtept>
+    <rtept lat="41.39700" lon="-71.03470"><name>Buzzards Bay Tower</name></rtept>
+    <rtept lat="41.38333" lon="-71.38932"><name>RW &quot;NB&quot; Mo(A)</name></rtept>
+    <rtept lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name></rtept>
+    <rtept lat="41.48017" lon="-71.31933"><name>Yellow Tetrahedron (SI 9.2)</name></rtept>
+    <rtept lat="41.48167" lon="-71.32685"><name>FINISH G&quot;3&quot; Bell (Goat I)</name></rtept>
+  </rte>
+  <rte><name>Course 8R (205 NM)</name>
+    <rtept lat="41.49170" lon="-71.35480"><name>START (RC, S of Rose I)</name></rtept>
+    <rtept lat="41.48350" lon="-71.35062"><name>G&quot;11&quot; QG Bell (E of Clingstone)</name></rtept>
+    <rtept lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name></rtept>
+    <rtept lat="41.38333" lon="-71.38932"><name>RW &quot;NB&quot; Mo(A)</name></rtept>
+    <rtept lat="41.39700" lon="-71.03470"><name>Buzzards Bay Tower</name></rtept>
+    <rtept lat="40.81672" lon="-72.47627"><name>RW &quot;SH&quot; Mo(A) Whis (S Shinnecock)</name></rtept>
+    <rtept lat="41.10195" lon="-71.77290"><name>G&quot;1&quot; Fl G 4s Gong</name></rtept>
+    <rtept lat="41.29965" lon="-71.85923"><name>R&quot;2&quot; Fl R 6s Bell (S of Watch Hill)</name></rtept>
+    <rtept lat="41.39700" lon="-71.03470"><name>Buzzards Bay Tower</name></rtept>
+    <rtept lat="41.38333" lon="-71.38932"><name>RW &quot;NB&quot; Mo(A)</name></rtept>
+    <rtept lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name></rtept>
+    <rtept lat="41.48017" lon="-71.31933"><name>Yellow Tetrahedron (SI 9.2)</name></rtept>
+    <rtept lat="41.48167" lon="-71.32685"><name>FINISH G&quot;3&quot; Bell (Goat I)</name></rtept>
+  </rte>
+  <rte><name>Course 9R (220 NM)</name>
+    <rtept lat="41.49170" lon="-71.35480"><name>START (RC, S of Rose I)</name></rtept>
+    <rtept lat="41.48350" lon="-71.35062"><name>G&quot;11&quot; QG Bell (E of Clingstone)</name></rtept>
+    <rtept lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name></rtept>
+    <rtept lat="41.38333" lon="-71.38932"><name>RW &quot;NB&quot; Mo(A)</name></rtept>
+    <rtept lat="41.39700" lon="-71.03470"><name>Buzzards Bay Tower</name></rtept>
+    <rtept lat="41.14962" lon="-70.82800"><name>Virtual Cox Ledge #4</name></rtept>
+    <rtept lat="41.07925" lon="-70.81975"><name>Virtual Cox Ledge #3</name></rtept>
+    <rtept lat="40.81672" lon="-72.47627"><name>RW &quot;SH&quot; Mo(A) Whis (S Shinnecock)</name></rtept>
+    <rtept lat="41.39700" lon="-71.03470"><name>Buzzards Bay Tower</name></rtept>
+    <rtept lat="41.38333" lon="-71.38932"><name>RW &quot;NB&quot; Mo(A)</name></rtept>
+    <rtept lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name></rtept>
+    <rtept lat="41.48017" lon="-71.31933"><name>Yellow Tetrahedron (SI 9.2)</name></rtept>
+    <rtept lat="41.48167" lon="-71.32685"><name>FINISH G&quot;3&quot; Bell (Goat I)</name></rtept>
+  </rte>
+  <rte><name>Course 10R (234 NM)</name>
+    <rtept lat="41.49170" lon="-71.35480"><name>START (RC, S of Rose I)</name></rtept>
+    <rtept lat="41.48350" lon="-71.35062"><name>G&quot;11&quot; QG Bell (E of Clingstone)</name></rtept>
+    <rtept lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name></rtept>
+    <rtept lat="41.38333" lon="-71.38932"><name>RW &quot;NB&quot; Mo(A)</name></rtept>
+    <rtept lat="41.39700" lon="-71.03470"><name>Buzzards Bay Tower</name></rtept>
+    <rtept lat="41.14962" lon="-70.82800"><name>Virtual Cox Ledge #4</name></rtept>
+    <rtept lat="41.07925" lon="-70.81975"><name>Virtual Cox Ledge #3</name></rtept>
+    <rtept lat="40.81672" lon="-72.47627"><name>RW &quot;SH&quot; Mo(A) Whis (S Shinnecock)</name></rtept>
+    <rtept lat="41.11600" lon="-71.71848"><name>GR &quot;BIS&quot; Fl(2+1)G 6s (ENE Montauk)</name></rtept>
+    <rtept lat="41.29965" lon="-71.85923"><name>R&quot;2&quot; Fl R 6s Bell (S of Watch Hill)</name></rtept>
+    <rtept lat="41.25732" lon="-71.57592"><name>G&quot;1BI&quot; Fl G 4s Bell</name></rtept>
+    <rtept lat="41.39700" lon="-71.03470"><name>Buzzards Bay Tower</name></rtept>
+    <rtept lat="41.38333" lon="-71.38932"><name>RW &quot;NB&quot; Mo(A)</name></rtept>
+    <rtept lat="41.45755" lon="-71.36640"><name>R&quot;6&quot; Bell (SW of Castle Hill)</name></rtept>
+    <rtept lat="41.48017" lon="-71.31933"><name>Yellow Tetrahedron (SI 9.2)</name></rtept>
+    <rtept lat="41.48167" lon="-71.32685"><name>FINISH G&quot;3&quot; Bell (Goat I)</name></rtept>
+  </rte>
+</gpx>
