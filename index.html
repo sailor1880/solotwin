@@ -738,27 +738,32 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <label style="font-size:12px"><input type="checkbox" id="coordmode"> Tap map for coordinates</label>
  <div id="mymarks" style="font-size:11px"></div>
  <button id="clrmarks" style="font-size:11px">Clear my marks</button>
- <hr><b style="font-size:12px">Weather (live)</b>
+ <hr><b style="font-size:12px">Weather (live)</b> <span style="color:#888;font-size:11px">one time slider drives all</span>
+ <div style="color:#888;font-size:11px;margin-top:2px">Wind</div>
  <label class="wx"><input type="checkbox" id="windchk"> Wind arrows (Open-Meteo)</label>
- <label class="wx"><input type="checkbox" id="gomofschk"> <b>Bay current MODEL</b> (NOAA GoMOFS, live)</label>
- <div id="gomofsleg" style="display:none;font-size:11px;margin:0 0 3px 18px">
-   <span style="background:linear-gradient(90deg,#2166ac,#67a9cf,#f7f7f7,#ef8a62,#b2182b);display:inline-block;width:112px;height:9px;vertical-align:middle;border:1px solid #999"></span><br>
-   <span style="color:#2166ac">ebb&nbsp;(S)</span> &larr; slack &rarr; <span style="color:#b2182b">flood&nbsp;(N)</span> &middot; &plusmn;2.3&nbsp;kt, N&ndash;S component</div>
- <label class="wx"><input type="checkbox" id="curflowchk"> In-bay tidal current field (animated)</label>
- <label class="wx"><input type="checkbox" id="curchk"> Offshore current arrows (coarse model)</label>
  <label class="wx"><input type="checkbox" id="flowchk"> Wind flow (animated)</label>
+ <div id="windleg" class="leg" style="display:none;margin:1px 0 2px 18px"><span style="background:#2c7fb8"></span>&lt;8
+   <span style="background:#41ab5d"></span>8-16 <span style="background:#f0a020"></span>16-22 <span style="background:#e6194b"></span>22+ kt</div>
+ <div style="color:#888;font-size:11px;margin-top:2px">Current</div>
+ <label class="wx"><input type="checkbox" id="gomofschk"> <b>Offshore current MODEL</b> (GoMOFS)</label>
+ <div id="gomofsleg" style="display:none;font-size:11px;margin:0 0 2px 18px">
+   <span style="color:#888">RI Sound / approaches only &mdash; not inside the bay</span><br>
+   <span style="background:linear-gradient(90deg,#2166ac,#67a9cf,#f7f7f7,#ef8a62,#b2182b);display:inline-block;width:112px;height:9px;vertical-align:middle;border:1px solid #999"></span><br>
+   <span style="color:#2166ac">ebb&nbsp;(S)</span> &larr; slack &rarr; <span style="color:#b2182b">flood&nbsp;(N)</span> &middot; &plusmn;2.3&nbsp;kt, N&ndash;S</div>
+ <label class="wx"><input type="checkbox" id="curflowchk"> In-bay tidal current field (animated)</label>
+ <label class="wx"><input type="checkbox" id="coopschk"> Tidal current arrows (NOAA stations)</label>
+ <label class="wx"><input type="checkbox" id="curchk"> Offshore current arrows (coarse model)</label>
+ <div id="curleg" class="leg" style="display:none;margin:1px 0 2px 18px"><span style="background:#00b4d8"></span>&lt;0.5
+   <span style="background:#0077b6"></span>0.5-1 <span style="background:#7b2cbf"></span>1-2 <span style="background:#e6194b"></span>2+ kt</div>
+ <div style="color:#888;font-size:11px;margin-top:2px">Radar</div>
  <label class="wx"><input type="checkbox" id="radarchk"> Rain radar (NEXRAD)</label>
  <div id="tbox" style="font-size:11px;margin:3px 0;display:none">
-   <span id="when">&nbsp;</span><br><input type="range" id="thr" min="0" max="47" value="0" style="width:100%">
-   <div class="leg" style="margin-top:3px"><span style="background:#2c7fb8"></span>&lt;8
-     <span style="background:#41ab5d"></span>8-16 <span style="background:#f0a020"></span>16-22
-     <span style="background:#e6194b"></span>22+ kt &nbsp;<span style="background:#7b2cbf"></span>current</div></div>
+   <span id="when">&nbsp;</span><br><input type="range" id="thr" min="0" max="47" value="0" style="width:100%"></div>
  <button id="windybtn" style="font-size:11px;margin-top:4px;cursor:pointer;width:100%">Windy view (in&nbsp;page)</button>
  <button id="windycourses" style="font-size:11px;margin-top:4px;cursor:pointer;width:100%">Windy + my courses &#8599;</button>
  <hr><b style="font-size:12px">Tracking</b>
  <label><input type="checkbox" id="gpschk"> My position (boat) &#9973;</label>
  <label style="margin-left:18px;font-size:12px"><input type="checkbox" id="followchk" checked> keep centered</label>
- <label><input type="checkbox" id="coopschk"> Tidal currents (NOAA, tide-based)</label>
  <hr><b style="font-size:12px">Track &amp; route</b>
  <label><input type="checkbox" id="recchk"> Record my GPS track</label>
  <label><input type="checkbox" id="drawchk"> Draw a route (tap map)</label>
@@ -781,7 +786,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <label><input type="checkbox" id="raceschk" checked> Show added races</label>
  <div id="racelist" style="font-size:11px;color:#555"></div>
  <button id="clrgpx" style="font-size:11px;margin-top:2px">Clear added races</button>
- <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. <b>Current flow</b> blends NOAA tidal-current stations (in-bay) with an ocean model (offshore), tied to the time slider; for exact set/drift also see <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-23 11:12</span></div>
+ <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. <b>Current flow</b> blends NOAA tidal-current stations (in-bay) with an ocean model (offshore), tied to the time slider; for exact set/drift also see <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-23 11:21</span></div>
 </div>
 <script>/* @preserve
  * Leaflet 1.9.4, a JS library for interactive maps. https://leafletjs.com
@@ -1891,8 +1896,12 @@ function drawCur(){ curLayer.clearLayers(); const h=hour();
       .bindTooltip(kn.toFixed(1)+' kt set',{direction:'top'}).addTo(curLayer); }); }
 
 const flowOn=()=>document.getElementById('flowchk').checked;
-function showTbox(){ document.getElementById('tbox').style.display=
-  (windOn()||curOn()||flowOn()||document.getElementById('coopschk').checked||document.getElementById('curflowchk').checked||document.getElementById('gomofschk').checked)?'block':'none'; }
+function showTbox(){ const on=id=>document.getElementById(id).checked;   // per-group legends; single shared time slider
+  const w=windOn()||flowOn(), c=on('curflowchk')||on('coopschk')||curOn(), m=on('gomofschk');
+  document.getElementById('tbox').style.display=(w||c||m)?'block':'none';
+  document.getElementById('windleg').style.display=w?'block':'none';
+  document.getElementById('curleg').style.display=c?'block':'none';
+  document.getElementById('gomofsleg').style.display=m?'block':'none'; }
 async function refreshWx(){           // rebuild grid for current view + refetch active layers
   buildGrid();
   try{ if(windOn()){ await loadWind(); drawWind(); } }catch(e){}
@@ -2105,7 +2114,7 @@ const curFlowOn=()=>document.getElementById('curflowchk').checked;
 async function loadCMask(){ if(!CMASK) CMASK=await (await fetch('curmask.json')).json(); return CMASK; }
 function curFieldData(){
   const g=CMASK; if(!g) return [{header:{},data:[]},{header:{},data:[]}];
-  const NX=g.nx, NY=g.ny, U=new Array(NX*NY).fill(0), V=new Array(NX*NY).fill(0), tgt=targetMs(), R=0.14;  // R ~8 nm
+  const NX=g.nx, NY=g.ny, U=new Array(NX*NY).fill(0), V=new Array(NX*NY).fill(0), tgt=targetMs();
   const st=[];                                    // CO-OPS station vectors at target time (m/s, SET/toward direction)
   (coopsStations||[]).forEach(s=>{ if(!s.series||!s.series.length) return; const c=curAt(s.series,tgt); if(!c) return;
     const spd=Math.abs(c.v)*0.514444, dir=(c.v>=0?c.fd:c.ed); if(isNaN(dir)) return; const r=dir*Math.PI/180;
@@ -2115,7 +2124,7 @@ function curFieldData(){
       if(g.mask[idx]==='1') continue;               // land cell -> velocity stays 0 (no particles cross land)
       const lo=g.lo1+ix*g.dx; let wsum=0,ut=0,vt=0;
       st.forEach(s=>{ const dyy=la-s.lat, dxx=(lo-s.lon)*Math.cos(la*Math.PI/180), d=Math.hypot(dxx,dyy);
-        if(d<R){ const w=1/(d*d+1e-4); wsum+=w; ut+=w*s.u; vt+=w*s.v; } });
+        const w=1/(d*d+4e-4); wsum+=w; ut+=w*s.u; vt+=w*s.v; });    // continuous IDW over ALL stations (no hard cutoff) -> smooth field
       if(wsum>0){ U[idx]=ut/wsum; V[idx]=vt/wsum; }
     } }
   const hdr=(num,name)=>({parameterUnit:'m.s-1',parameterCategory:2,parameterNumber:num,parameterNumberName:name,
@@ -2142,12 +2151,12 @@ function gomofsTime(){ try{ return new Date(targetMs()).toISOString(); }catch(e)
 document.getElementById('gomofschk').addEventListener('change',e=>{
   if(e.target.checked){
     gomofsLayer=L.tileLayer.wms(GOMOFS_WMS,{layers:'v:face',styles:'default-scalar/div-BuRd',
-      format:'image/png',transparent:true,colorscalerange:'-1.2,1.2',numcolorbands:20,
-      elevation:-0.0167,abovemaxcolor:'extend',belowmincolor:'extend',opacity:0.6,
+      format:'image/png',transparent:true,colorscalerange:'-1.0,1.0',numcolorbands:20,
+      elevation:-0.0167,abovemaxcolor:'extend',belowmincolor:'extend',opacity:0.65,
       time:gomofsTime(),attribution:'NOAA GoMOFS (ROMS) via NOS CO-OPS THREDDS'}).addTo(map);
-    document.getElementById('gomofsleg').style.display='block'; showTbox();
+    showTbox();
   } else { if(gomofsLayer){ map.removeLayer(gomofsLayer); gomofsLayer=null; }
-    document.getElementById('gomofsleg').style.display='none'; showTbox(); }
+    showTbox(); }
 });
 
 // ---- Courses ----
