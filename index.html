@@ -718,6 +718,13 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <label class="ez"><input type="checkbox" id="ezchk" checked> Cox Ledge Exclusion Zone</label>
  <label class="fin"><input type="checkbox" id="finchk" checked> Finish line (120&deg;/300&deg;)</label>
  <div id="mycourses"></div>
+ <hr><b style="font-size:12px">Course library</b> <span style="color:#888;font-size:11px">(needs South Bay marks)</span>
+ <select id="courseset" style="font-size:11px;width:100%;margin:2px 0"></select>
+ <input id="coursepick" list="coursecodes" placeholder="type a code &mdash; e.g. 18, A5, W3" autocomplete="off" spellcheck="false" style="font-size:12px;width:100%;box-sizing:border-box">
+ <datalist id="coursecodes"></datalist>
+ <div id="courseinfo" style="font-size:11px;color:#555;min-height:14px;margin-top:2px"></div>
+ <div style="margin-top:2px"><button id="courseclr" style="font-size:11px">Clear course</button>
+   <label style="font-size:11px;margin-left:6px"><input type="checkbox" id="coursekeep"> keep on reload</label></div>
  <hr><b style="font-size:12px">Race marks (manual)</b>
  <label style="font-size:12px"><input type="checkbox" id="markmode"> Place mark (tap map, then name it)</label>
  <label style="font-size:12px"><input type="checkbox" id="coordmode"> Tap map for coordinates</label>
@@ -759,7 +766,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <label><input type="checkbox" id="raceschk" checked> Show added races</label>
  <div id="racelist" style="font-size:11px;color:#555"></div>
  <button id="clrgpx" style="font-size:11px;margin-top:2px">Clear added races</button>
- <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. Current arrows are an <b>ocean model, not tidal</b> &mdash; for tidal set/drift use <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-22 20:13</span></div>
+ <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. Current arrows are an <b>ocean model, not tidal</b> &mdash; for tidal set/drift use <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-22 20:25</span></div>
 </div>
 <script>/* @preserve
  * Leaflet 1.9.4, a JS library for interactive maps. https://leafletjs.com
@@ -2344,6 +2351,60 @@ document.getElementById('sbchk').addEventListener('change',async e=>{
     catch(err){ alert('Could not load South Bay marks: '+err); e.target.checked=false; } }
   else if(sbLayer) map.removeLayer(sbLayer); });
 
+// ---- Course library picker (SBRC coded courses; set model also supports 'list' type for 20HC etc.) ----
+let COURSESETS=null, sbMarksData=null, courseLine=null, curSetIdx=0;
+async function getSBMarks(){ if(!sbMarksData){ sbMarksData=(await (await fetch('southbay_marks.json')).json()).marks; } return sbMarksData; }
+async function loadCourseSets(){ if(COURSESETS) return COURSESETS;
+  COURSESETS=(await (await fetch('courses.json')).json()).sets;
+  const sel=document.getElementById('courseset'); sel.innerHTML='';
+  COURSESETS.forEach((s,i)=>{ const o=document.createElement('option'); o.value=i;
+    o.textContent=(s.club?s.club+' - ':'')+s.startArea+' ('+Object.keys(s.courses).length+')'; sel.appendChild(o); });
+  await getSBMarks(); fillCodes(0); return COURSESETS; }
+function fillCodes(idx){ curSetIdx=idx; const dl=document.getElementById('coursecodes'); dl.innerHTML='';
+  Object.keys(COURSESETS[idx].courses).forEach(c=>{ const o=document.createElement('option'); o.value=c; dl.appendChild(o); }); }
+function clearCourseLine(){ if(courseLine){ map.removeLayer(courseLine); courseLine=null; } }
+function drawCourse(code){ const set=COURSESETS[curSetIdx], c=set.courses[code], info=document.getElementById('courseinfo');
+  if(!c){ info.textContent=''; return; }
+  clearCourseLine();
+  const pts=[], parts=[], missing=[];
+  if(set.start) pts.push(set.start);
+  c.seq.forEach(([mk,side])=>{ const m=sbMarksData[mk];
+    if(m){ pts.push([m.lat,m.lon]); parts.push(mk+'('+(side==='fin'?'F':side)+')'); }
+    else { missing.push(mk); parts.push(mk+'?'); } });
+  const last=c.seq[c.seq.length-1];
+  if(set.start && !(last&&last[1]==='fin')) pts.push(set.start); // non-(FIN) courses finish back at the start line
+  courseLine=L.layerGroup();
+  L.polyline(pts,{color:'#d500f9',weight:3,opacity:.9}).addTo(courseLine);
+  c.seq.forEach(([mk,side])=>{ const m=sbMarksData[mk]; if(!m) return;
+    L.circleMarker([m.lat,m.lon],{radius:5,color:'#6a0080',weight:2,fillColor:'#e040fb',fillOpacity:1})
+      .bindTooltip(mk+(side==='fin'?' (finish)':side==='p'?' (port)':' (stbd)'),{direction:'top'}).addTo(courseLine); });
+  if(set.start) L.circleMarker(set.start,{radius:6,color:'#fff',weight:2,fillColor:'#22c55e',fillOpacity:1})
+    .bindTooltip('Start: '+set.startArea,{direction:'top'}).addTo(courseLine);
+  courseLine.addTo(map);
+  info.innerHTML='<b>'+code+'</b>: '+parts.join(' &rarr; ')+' &middot; <b>'+(c.dist||'?')+' NM</b>'
+    +(missing.length?'<br><span style="color:#c00">unplaced marks: '+missing.join(', ')+'</span>':'');
+  if(pts.length>1) map.fitBounds(pts,{padding:[40,40]});
+  persistCourse(code);
+}
+function persistCourse(code){ try{ localStorage.setItem('sa_course',
+  document.getElementById('coursekeep').checked&&code? JSON.stringify({set:curSetIdx,code}):''); }catch(e){} }
+document.getElementById('courseset').addEventListener('focus',loadCourseSets,{once:true});
+document.getElementById('coursepick').addEventListener('focus',loadCourseSets,{once:true});
+document.getElementById('courseset').addEventListener('change',e=>{ fillCodes(+e.target.value);
+  document.getElementById('coursepick').value=''; clearCourseLine(); document.getElementById('courseinfo').textContent=''; persistCourse(''); });
+document.getElementById('coursepick').addEventListener('input',e=>{ if(!COURSESETS) return;
+  const code=e.target.value.trim(); if(COURSESETS[curSetIdx].courses[code]) drawCourse(code); });
+document.getElementById('coursepick').addEventListener('change',async e=>{ await loadCourseSets();
+  const code=e.target.value.trim(); if(COURSESETS[curSetIdx].courses[code]) drawCourse(code);
+  else document.getElementById('courseinfo').innerHTML='<span style="color:#c00">no course "'+code+'" in this set</span>'; });
+document.getElementById('courseclr').addEventListener('click',()=>{ clearCourseLine();
+  document.getElementById('coursepick').value=''; document.getElementById('courseinfo').textContent=''; try{localStorage.removeItem('sa_course');}catch(e){} });
+document.getElementById('coursekeep').addEventListener('change',()=>persistCourse(document.getElementById('coursepick').value.trim()));
+(function(){ let s; try{ s=JSON.parse(localStorage.getItem('sa_course')||'null'); }catch(e){}
+  if(s&&s.code){ document.getElementById('coursekeep').checked=true;
+    loadCourseSets().then(()=>{ document.getElementById('courseset').value=s.set||0; fillCodes(s.set||0);
+      document.getElementById('coursepick').value=s.code; drawCourse(s.code); }); } })();
+
 // ---- Clubs & services: blue-star waypoints, popup = name / VHF / tap-to-call phone (positions approx) ----
 const CLUBS=[
 ["Coasters Harbor Navy YC","09","(401) 841-3283",41.50884,-71.3275],
@@ -2366,7 +2427,7 @@ const CLUBS=[
 ["US Coast Guard Stn Castle Hill","16","(401) 846-3675",41.46217,-71.35686],
 ["Rhode Island YC","","(401) 941-0220",41.76795,-71.38601],
 ["Wickford YC","","(401) 294-9010",41.57717,-71.4475],
-["Bristol YC","","(401) 253-2922",41.67605,-71.28986]
+["Bristol YC","","(401) 253-2922",41.67605,-71.28986],
 ["Brown & Howard Wharf Marina","09","",41.48217,-71.31552],["Goat Island Marina","09","(401) 849-5655",41.4894,-71.3264],["Newport Yachting Center","09","(401) 846-1600",41.48523,-71.31669],["Safe Harbor Cowesett","71","(401) 884-0544",41.68433,-71.44762],["Fairwinds Marina","71","(401) 921-1955",41.68824,-71.39324],["Block Island Harbormaster","12","(401) 466-3204",41.17333,-71.556],["Narragansett Harbormaster","09","(401) 640-1038",41.447,-71.453],["South Kingstown Harbormaster","09","(401) 783-3321",41.443,-71.499],];
 const clubIcon=L.divIcon({className:'',iconSize:[22,22],iconAnchor:[11,11],
   html:'<div style="color:#1565c0;font-size:20px;line-height:22px;text-align:center;text-shadow:0 0 2px #fff,0 0 3px #fff">★</div>'});
