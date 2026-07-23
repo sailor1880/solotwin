@@ -759,7 +759,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <label><input type="checkbox" id="raceschk" checked> Show added races</label>
  <div id="racelist" style="font-size:11px;color:#555"></div>
  <button id="clrgpx" style="font-size:11px;margin-top:2px">Clear added races</button>
- <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. Current arrows are an <b>ocean model, not tidal</b> &mdash; for tidal set/drift use <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-22 19:53</span></div>
+ <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. Current arrows are an <b>ocean model, not tidal</b> &mdash; for tidal set/drift use <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-22 20:12</span></div>
 </div>
 <script>/* @preserve
  * Leaflet 1.9.4, a JS library for interactive maps. https://leafletjs.com
@@ -2303,16 +2303,22 @@ document.getElementById('savecourse').onclick=()=>{ if(routePts.length<2){ alert
 let myMarks=[]; const MMKEY='sa_marks';
 const myMarksLayer=L.layerGroup().addTo(map);
 function persistMarks(){ try{ localStorage.setItem(MMKEY,JSON.stringify(myMarks)); }catch(e){} }
-function markIcon(){ return L.divIcon({className:'',iconSize:[14,14],iconAnchor:[7,7],
-  html:'<div style="width:12px;height:12px;border-radius:50%;background:#ffd400;border:2px solid #7a5c00;box-shadow:0 0 2px rgba(0,0,0,.6)"></div>'}); }
+function markIcon(){ return L.divIcon({className:'',iconSize:[20,20],iconAnchor:[10,10],
+  html:'<div style="color:#f4c400;font-size:18px;line-height:20px;text-align:center;text-shadow:0 0 2px #7a5c00,0 0 3px #7a5c00">★</div>'}); }
 window.delMark=function(i){ myMarks.splice(i,1); drawMyMarks(); renderMyMarks(); persistMarks(); };
 function drawMyMarks(){ myMarksLayer.clearLayers();
   myMarks.forEach((m,i)=>{ const mk=L.marker([m.lat,m.lon],{icon:markIcon(),draggable:true,keyboard:false,zIndexOffset:600}).addTo(myMarksLayer);
     mk.bindTooltip(m.name,{permanent:true,direction:'right',offset:[8,0]});
     mk.on('dragend',ev=>{ const ll=ev.target.getLatLng(); myMarks[i].lat=+ll.lat.toFixed(5); myMarks[i].lon=+ll.lng.toFixed(5); persistMarks(); });
     mk.bindPopup('<b>'+m.name+'</b><br>'+m.lat.toFixed(5)+', '+m.lon.toFixed(5)+'<br><a href="#" onclick="delMark('+i+');return false;">Delete mark</a>'); }); }
-function renderMyMarks(){ const box=document.getElementById('mymarks'); box.innerHTML=
-  myMarks.length? '<b style="font-size:12px">My marks</b> ('+myMarks.length+') &mdash; drag to adjust, tap to delete' : ''; }
+function renderMyMarks(){ const box=document.getElementById('mymarks'); box.innerHTML='';
+  if(myMarks.length){ const h=document.createElement('div'); h.style.marginTop='2px';
+    h.innerHTML='<b style="font-size:12px">My marks</b> <span style="color:#888">(drag to adjust)</span>'; box.appendChild(h); }
+  myMarks.forEach((m,i)=>{ const d=document.createElement('div'); d.style.fontSize='11px';
+    d.innerHTML='<span style="color:#f4c400">&#9733;</span> '+m.name+' <a href="#" data-del="'+i+'" style="color:#c00">&#10005;</a>';
+    box.appendChild(d); });
+  box.querySelectorAll('a[data-del]').forEach(a=>a.addEventListener('click',ev=>{ ev.preventDefault();
+    myMarks.splice(+a.dataset.del,1); drawMyMarks(); renderMyMarks(); persistMarks(); })); }
 function placeMark(ll){ const dflt=String.fromCharCode(65+(myMarks.length%26));
   const name=prompt('Mark name/letter:', dflt); if(name===null) return;
   myMarks.push({name:name||dflt, lat:+ll.lat.toFixed(5), lon:+ll.lng.toFixed(5)}); drawMyMarks(); renderMyMarks(); persistMarks(); }
