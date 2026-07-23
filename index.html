@@ -727,13 +727,21 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <label class="fin"><input type="checkbox" id="finchk" checked> Finish line (120&deg;/300&deg;)</label>
  <div id="mycourses"></div>
  <hr><b style="font-size:12px">Course library</b> <span style="color:#888;font-size:11px">South Bay coded courses</span>
- <div style="color:#888;font-size:11px">20HC &amp; Ida Lewis races &rarr; <b>&ldquo;Other races&rdquo;</b> section below</div>
+ <div style="color:#888;font-size:11px">20HC, Ida Lewis &amp; more &rarr; <b>Narragansett Bay races</b> below</div>
  <select id="courseset" style="font-size:11px;width:100%;margin:2px 0"></select>
  <input id="coursepick" list="coursecodes" placeholder="type a code &mdash; e.g. 18, A5, W3" autocomplete="off" spellcheck="false" style="font-size:12px;width:100%;box-sizing:border-box">
  <datalist id="coursecodes"></datalist>
  <div id="courseinfo" style="font-size:11px;color:#555;min-height:14px;margin-top:2px"></div>
  <div style="margin-top:2px"><button id="courseclr" style="font-size:11px">Clear course</button>
    <span style="font-size:11px;color:#888;margin-left:6px">stays until cleared &middot; shows in Windy</span></div>
+ <hr><b style="font-size:12px">Narragansett Bay races</b> <span style="color:#888;font-size:11px">by yacht club</span>
+ <label style="font-size:12px;display:block;margin:2px 0">Load a race:
+   <select id="racecat" style="font-size:11px;width:100%"><option value="">&hellip;</option></select></label>
+ <label style="font-size:12px;display:block;margin:2px 0">Add your own (GPX):
+   <input type="file" id="gpxfile" accept=".gpx,application/gpx+xml" style="font-size:11px;width:100%"></label>
+ <label><input type="checkbox" id="raceschk" checked> Show loaded races</label>
+ <div id="racelist" style="font-size:11px;color:#555"></div>
+ <button id="clrgpx" style="font-size:11px;margin-top:2px">Clear all loaded races</button>
  <hr><b style="font-size:12px">Race marks (manual)</b>
  <label style="font-size:12px"><input type="checkbox" id="markmode"> Place mark (tap map, then name it)</label>
  <label style="font-size:12px"><input type="checkbox" id="coordmode"> Tap map for coordinates</label>
@@ -780,15 +788,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <div style="margin-top:3px;display:flex;gap:4px;flex-wrap:wrap">
    <button id="savetrack" style="font-size:11px">Save track.gpx</button>
    <button id="clrtrack" style="font-size:11px">Clear track</button></div>
- <hr><b style="font-size:12px">Other races</b> <span style="color:#888;font-size:11px">20HC &middot; Ida Lewis &middot; your GPX</span>
- <label style="font-size:12px;display:block;margin:2px 0">Race catalog:
-   <select id="racecat" style="font-size:11px;width:100%"><option value="">&hellip;</option></select></label>
- <label style="font-size:12px;display:block;margin:2px 0">Add your own (GPX):
-   <input type="file" id="gpxfile" accept=".gpx,application/gpx+xml" style="font-size:11px;width:100%"></label>
- <label><input type="checkbox" id="raceschk" checked> Show added races</label>
- <div id="racelist" style="font-size:11px;color:#555"></div>
- <button id="clrgpx" style="font-size:11px;margin-top:2px">Clear added races</button>
- <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. <b>Current flow</b> blends NOAA tidal-current stations (in-bay) with an ocean model (offshore), tied to the time slider; for exact set/drift also see <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-23 17:13</span></div>
+ <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. <b>Current flow</b> blends NOAA tidal-current stations (in-bay) with an ocean model (offshore), tied to the time slider; for exact set/drift also see <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-23 18:04</span></div>
 </div>
 <script>/* @preserve
  * Leaflet 1.9.4, a JS library for interactive maps. https://leafletjs.com
@@ -2601,9 +2601,11 @@ document.getElementById('raceschk').addEventListener('change',applyRaceVisibilit
 // ---- Bundled race catalog (races.json manifest -> pick to load bundled GPX via the same path) ----
 (function(){ const sel=document.getElementById('racecat'); if(!sel) return;
   fetch('races.json').then(r=>r.json()).then(list=>{
-    sel.innerHTML='<option value="">&mdash; pick a race to load &mdash;</option>';
-    list.forEach(r=>{ const o=document.createElement('option'); o.value=r.file;
-      o.dataset.name=r.name; o.textContent=r.name+(r.year?' ('+r.year+')':'')+(r.club?' – '+r.club:''); sel.appendChild(o); });
+    sel.innerHTML='<option value="">&mdash; pick a race &mdash;</option>';
+    const byClub={}; list.forEach(r=>{ const k=r.club||'Other'; (byClub[k]=byClub[k]||[]).push(r); });   // group by yacht club
+    Object.keys(byClub).sort().forEach(club=>{ const og=document.createElement('optgroup'); og.label=club;
+      byClub[club].forEach(r=>{ const o=document.createElement('option'); o.value=r.file; o.dataset.name=r.name;
+        o.textContent=r.name.replace(/^20HC\s+/,'')+(r.year?' ('+r.year+')':''); og.appendChild(o); }); sel.appendChild(og); });
   }).catch(()=>{ sel.innerHTML='<option value="">catalog unavailable</option>'; });
   sel.addEventListener('change',async e=>{ const file=e.target.value; if(!file) return;
     const name=e.target.selectedOptions[0].dataset.name||file;
@@ -2616,7 +2618,7 @@ document.getElementById('raceschk').addEventListener('change',applyRaceVisibilit
 })();
 
 // ---- NOAA aids (USCG Light List Vol 1, bundled aids.json, lazy-loaded, viewport-culled + canvas) ----
-let AIDS=null; const aidsCanvas=L.canvas({padding:0.3}), aidsLayer=L.layerGroup();
+let AIDS=null; const aidsCanvas=L.canvas({padding:0.3,tolerance:14}), aidsLayer=L.layerGroup();  // tolerance = bigger tap target (mobile single-tap)
 const aidsOn=()=>document.getElementById('aidschk').checked;
 function aidStyle(a){                       // chart-like colour from Light List name + characteristic
   const nm=(a[3]||'').toLowerCase(), ch=(a[4]||'').toLowerCase(), t=nm+' '+ch;
