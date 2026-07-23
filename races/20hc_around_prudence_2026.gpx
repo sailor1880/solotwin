@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="sailing-assistant" xmlns="http://www.topografix.com/GPX/1/1">
+  <metadata><name>20HC Around Prudence Race 2026</name><desc>Twenty Hundred Club Fall Race, around Prudence Island. NOTE: 'RGN Providence Point' mark not yet located in Light List - that leg (between Ohio Ledge/SP and Patience) is omitted from the drawn line. Marks: USCG Light List 2025.</desc></metadata>
+  <wpt lat="41.61041" lon="-71.39481"><name>R14 Davisville (Quonset 14, start/fin)</name><sym>Buoy</sym></wpt>
+  <wpt lat="41.58158" lon="-71.39701"><name>G7 Quonset (Quonset 7)</name><sym>Buoy</sym></wpt>
+  <wpt lat="41.57785" lon="-71.36128"><name>R2 NE Conanicut (Quonset Bell 2)</name><sym>Buoy</sym></wpt>
+  <wpt lat="41.52968" lon="-71.33537"><name>G17 E of Gould I (East Passage 17)</name><sym>Buoy</sym></wpt>
+  <wpt lat="41.61539" lon="-71.29321"><name>RG SP Sandy Pt Jct Bell</name><sym>Buoy</sym></wpt>
+  <wpt lat="41.68228" lon="-71.32185"><name>GR OL Ohio Ledge Bell</name><sym>Buoy</sym></wpt>
+  <wpt lat="41.66094" lon="-71.37280"><name>R8 Patience I Bell</name><sym>Buoy</sym></wpt>
+  <wpt lat="41.57638" lon="-71.32781"><name>RGN PI (S of Prudence, start/fin)</name><sym>Buoy</sym></wpt>
+  <rte><name>Course I SHORT CCW (17.4 NM)</name>
+    <rtept lat="41.61041" lon="-71.39481"><name>R14 Davisville (Quonset 14, start/fin)</name></rtept>
+    <rtept lat="41.58158" lon="-71.39701"><name>G7 Quonset (Quonset 7)</name></rtept>
+    <rtept lat="41.57638" lon="-71.32781"><name>RGN PI (S of Prudence, start/fin)</name></rtept>
+    <rtept lat="41.61539" lon="-71.29321"><name>RG SP Sandy Pt Jct Bell</name></rtept>
+    <rtept lat="41.66094" lon="-71.37280"><name>R8 Patience I Bell</name></rtept>
+    <rtept lat="41.61041" lon="-71.39481"><name>R14 Davisville (Quonset 14, start/fin)</name></rtept>
+  </rte>
+  <rte><name>Course II LONG CCW (22.2 NM)</name>
+    <rtept lat="41.61041" lon="-71.39481"><name>R14 Davisville (Quonset 14, start/fin)</name></rtept>
+    <rtept lat="41.58158" lon="-71.39701"><name>G7 Quonset (Quonset 7)</name></rtept>
+    <rtept lat="41.57785" lon="-71.36128"><name>R2 NE Conanicut (Quonset Bell 2)</name></rtept>
+    <rtept lat="41.52968" lon="-71.33537"><name>G17 E of Gould I (East Passage 17)</name></rtept>
+    <rtept lat="41.61539" lon="-71.29321"><name>RG SP Sandy Pt Jct Bell</name></rtept>
+    <rtept lat="41.68228" lon="-71.32185"><name>GR OL Ohio Ledge Bell</name></rtept>
+    <rtept lat="41.66094" lon="-71.37280"><name>R8 Patience I Bell</name></rtept>
+    <rtept lat="41.61041" lon="-71.39481"><name>R14 Davisville (Quonset 14, start/fin)</name></rtept>
+  </rte>
+  <rte><name>Course III SHORT CW (17.4 NM)</name>
+    <rtept lat="41.61041" lon="-71.39481"><name>R14 Davisville (Quonset 14, start/fin)</name></rtept>
+    <rtept lat="41.66094" lon="-71.37280"><name>R8 Patience I Bell</name></rtept>
+    <rtept lat="41.61539" lon="-71.29321"><name>RG SP Sandy Pt Jct Bell</name></rtept>
+    <rtept lat="41.57638" lon="-71.32781"><name>RGN PI (S of Prudence, start/fin)</name></rtept>
+    <rtept lat="41.58158" lon="-71.39701"><name>G7 Quonset (Quonset 7)</name></rtept>
+    <rtept lat="41.61041" lon="-71.39481"><name>R14 Davisville (Quonset 14, start/fin)</name></rtept>
+  </rte>
+  <rte><name>Course IV LONG CW (22.2 NM)</name>
+    <rtept lat="41.61041" lon="-71.39481"><name>R14 Davisville (Quonset 14, start/fin)</name></rtept>
+    <rtept lat="41.66094" lon="-71.37280"><name>R8 Patience I Bell</name></rtept>
+    <rtept lat="41.68228" lon="-71.32185"><name>GR OL Ohio Ledge Bell</name></rtept>
+    <rtept lat="41.61539" lon="-71.29321"><name>RG SP Sandy Pt Jct Bell</name></rtept>
+    <rtept lat="41.52968" lon="-71.33537"><name>G17 E of Gould I (East Passage 17)</name></rtept>
+    <rtept lat="41.57785" lon="-71.36128"><name>R2 NE Conanicut (Quonset Bell 2)</name></rtept>
+    <rtept lat="41.58158" lon="-71.39701"><name>G7 Quonset (Quonset 7)</name></rtept>
+    <rtept lat="41.61041" lon="-71.39481"><name>R14 Davisville (Quonset 14, start/fin)</name></rtept>
+  </rte>
+</gpx>

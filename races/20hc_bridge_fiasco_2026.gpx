@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="sailing-assistant" xmlns="http://www.topografix.com/GPX/1/1">
+  <metadata><name>20HC Bridge Fiasco 2026</name><desc>Twenty Hundred Club. Pass under each bridge center span in ANY order; start & finish at RGN PI (S of Prudence). Drawn loops are one sensible order.</desc></metadata>
+  <wpt lat="41.57638" lon="-71.32781"><name>RGN PI (S of Prudence, start/fin)</name><sym>Buoy</sym></wpt>
+  <wpt lat="41.50400" lon="-71.34860"><name>Pell Bridge (center span)</name><sym>Buoy</sym></wpt>
+  <wpt lat="41.50330" lon="-71.38080"><name>Jamestown Verrazano Br (center)</name><sym>Buoy</sym></wpt>
+  <wpt lat="41.64030" lon="-71.25580"><name>Mt Hope Bridge (center)</name><sym>Buoy</sym></wpt>
+  <rte><name>Course A - 3 bridges (27.8 NM)</name>
+    <rtept lat="41.57638" lon="-71.32781"><name>RGN PI (S of Prudence, start/fin)</name></rtept>
+    <rtept lat="41.64030" lon="-71.25580"><name>Mt Hope Bridge (center)</name></rtept>
+    <rtept lat="41.50400" lon="-71.34860"><name>Pell Bridge (center span)</name></rtept>
+    <rtept lat="41.50330" lon="-71.38080"><name>Jamestown Verrazano Br (center)</name></rtept>
+    <rtept lat="41.57638" lon="-71.32781"><name>RGN PI (S of Prudence, start/fin)</name></rtept>
+  </rte>
+  <rte><name>Course B - Verrazano+Pell (17.8 NM)</name>
+    <rtept lat="41.57638" lon="-71.32781"><name>RGN PI (S of Prudence, start/fin)</name></rtept>
+    <rtept lat="41.50400" lon="-71.34860"><name>Pell Bridge (center span)</name></rtept>
+    <rtept lat="41.50330" lon="-71.38080"><name>Jamestown Verrazano Br (center)</name></rtept>
+    <rtept lat="41.57638" lon="-71.32781"><name>RGN PI (S of Prudence, start/fin)</name></rtept>
+  </rte>
+  <rte><name>Course C - Verrazano+Mt Hope (21.2 NM)</name>
+    <rtept lat="41.57638" lon="-71.32781"><name>RGN PI (S of Prudence, start/fin)</name></rtept>
+    <rtept lat="41.64030" lon="-71.25580"><name>Mt Hope Bridge (center)</name></rtept>
+    <rtept lat="41.50330" lon="-71.38080"><name>Jamestown Verrazano Br (center)</name></rtept>
+    <rtept lat="41.57638" lon="-71.32781"><name>RGN PI (S of Prudence, start/fin)</name></rtept>
+  </rte>
+  <rte><name>Course D - Pell+Mt Hope (18.6 NM)</name>
+    <rtept lat="41.57638" lon="-71.32781"><name>RGN PI (S of Prudence, start/fin)</name></rtept>
+    <rtept lat="41.64030" lon="-71.25580"><name>Mt Hope Bridge (center)</name></rtept>
+    <rtept lat="41.50400" lon="-71.34860"><name>Pell Bridge (center span)</name></rtept>
+    <rtept lat="41.57638" lon="-71.32781"><name>RGN PI (S of Prudence, start/fin)</name></rtept>
+  </rte>
+</gpx>

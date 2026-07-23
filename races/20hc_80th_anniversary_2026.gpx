@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="sailing-assistant" xmlns="http://www.topografix.com/GPX/1/1">
+  <metadata><name>20HC 80th Anniversary Race 2026</name><desc>Twenty Hundred Club Newport to Mystic, 29.6 NM. Point Judith 4 to stbd; pass through Watch Hill Reef gate (Gong1 & Bell2); finish at Napatree Bell 6. Marks: USCG Light List 2025.</desc></metadata>
+  <wpt lat="41.49261" lon="-71.33642"><name>G3 Gong SE Rose I (start)</name><sym>Buoy</sym></wpt>
+  <wpt lat="41.34892" lon="-71.50708"><name>Point Judith Bell 4</name><sym>Buoy</sym></wpt>
+  <wpt lat="41.29554" lon="-71.86109"><name>Watch Hill Reef Gong 1</name><sym>Buoy</sym></wpt>
+  <wpt lat="41.29964" lon="-71.85924"><name>Watch Hill Reef Bell 2</name><sym>Buoy</sym></wpt>
+  <wpt lat="41.30037" lon="-71.88892"><name>Napatree Pt Ledge Bell 6 (finish)</name><sym>Buoy</sym></wpt>
+  <rte><name>Newport to Mystic (29.6 NM)</name>
+    <rtept lat="41.49261" lon="-71.33642"><name>G3 Gong SE Rose I (start)</name></rtept>
+    <rtept lat="41.34892" lon="-71.50708"><name>Point Judith Bell 4</name></rtept>
+    <rtept lat="41.29554" lon="-71.86109"><name>Watch Hill Reef Gong 1</name></rtept>
+    <rtept lat="41.29964" lon="-71.85924"><name>Watch Hill Reef Bell 2</name></rtept>
+    <rtept lat="41.30037" lon="-71.88892"><name>Napatree Pt Ledge Bell 6 (finish)</name></rtept>
+  </rte>
+</gpx>
