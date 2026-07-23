@@ -760,13 +760,15 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <div style="margin-top:3px;display:flex;gap:4px;flex-wrap:wrap">
    <button id="savetrack" style="font-size:11px">Save track.gpx</button>
    <button id="clrtrack" style="font-size:11px">Clear track</button></div>
- <hr><b style="font-size:12px">Other races (GPX)</b>
- <label style="font-size:12px;display:block;margin:2px 0">Add race:
+ <hr><b style="font-size:12px">Other races</b>
+ <label style="font-size:12px;display:block;margin:2px 0">Race catalog:
+   <select id="racecat" style="font-size:11px;width:100%"><option value="">&hellip;</option></select></label>
+ <label style="font-size:12px;display:block;margin:2px 0">Add your own (GPX):
    <input type="file" id="gpxfile" accept=".gpx,application/gpx+xml" style="font-size:11px;width:100%"></label>
  <label><input type="checkbox" id="raceschk" checked> Show added races</label>
  <div id="racelist" style="font-size:11px;color:#555"></div>
  <button id="clrgpx" style="font-size:11px;margin-top:2px">Clear added races</button>
- <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. Current arrows are an <b>ocean model, not tidal</b> &mdash; for tidal set/drift use <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-23 07:23</span></div>
+ <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. Current arrows are an <b>ocean model, not tidal</b> &mdash; for tidal set/drift use <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-23 07:30</span></div>
 </div>
 <script>/* @preserve
  * Leaflet 1.9.4, a JS library for interactive maps. https://leafletjs.com
@@ -2494,6 +2496,22 @@ document.getElementById('clrgpx').onclick=()=>{ if(!racesRaw.length) return; if(
 document.getElementById('raceschk').addEventListener('change',applyRaceVisibility);
 (function(){ try{ racesRaw=JSON.parse(localStorage.getItem(RKEY)||'[]'); }catch(e){ racesRaw=[]; }
   racesRaw.forEach((r,i)=>{ try{ races.push(buildRace(r.text,r.name,i)); }catch(e){} }); applyRaceVisibility(); renderRaceList(); })();
+// ---- Bundled race catalog (races.json manifest -> pick to load bundled GPX via the same path) ----
+(function(){ const sel=document.getElementById('racecat'); if(!sel) return;
+  fetch('races.json').then(r=>r.json()).then(list=>{
+    sel.innerHTML='<option value="">&mdash; pick a race to load &mdash;</option>';
+    list.forEach(r=>{ const o=document.createElement('option'); o.value=r.file;
+      o.dataset.name=r.name; o.textContent=r.name+(r.year?' ('+r.year+')':'')+(r.club?' – '+r.club:''); sel.appendChild(o); });
+  }).catch(()=>{ sel.innerHTML='<option value="">catalog unavailable</option>'; });
+  sel.addEventListener('change',async e=>{ const file=e.target.value; if(!file) return;
+    const name=e.target.selectedOptions[0].dataset.name||file;
+    if(racesRaw.some(r=>r.name===name)){ alert(name+' is already loaded'); e.target.value=''; return; }
+    try{ const text=await (await fetch(file)).text(); racesRaw.push({name,text}); saveRaces();
+      if(!document.getElementById('raceschk').checked) document.getElementById('raceschk').checked=true;
+      addRace(text,name,racesRaw.length-1,true); renderRaceList(); }
+    catch(err){ alert('Could not load '+name+': '+err); }
+    e.target.value=''; });
+})();
 
 // ---- NOAA aids (USCG Light List Vol 1, bundled aids.json, lazy-loaded, viewport-culled + canvas) ----
 let AIDS=null; const aidsCanvas=L.canvas({padding:0.3}), aidsLayer=L.layerGroup();
