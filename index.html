@@ -744,8 +744,8 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <div id="gomofsleg" style="display:none;font-size:11px;margin:0 0 3px 18px">
    <span style="background:linear-gradient(90deg,#2166ac,#67a9cf,#f7f7f7,#ef8a62,#b2182b);display:inline-block;width:112px;height:9px;vertical-align:middle;border:1px solid #999"></span><br>
    <span style="color:#2166ac">ebb&nbsp;(S)</span> &larr; slack &rarr; <span style="color:#b2182b">flood&nbsp;(N)</span> &middot; &plusmn;2.3&nbsp;kt, N&ndash;S component</div>
- <label class="wx"><input type="checkbox" id="curflowchk"> Current flow (animated: bay tide + offshore)</label>
- <label class="wx"><input type="checkbox" id="curchk"> Offshore current arrows (model)</label>
+ <label class="wx"><input type="checkbox" id="curflowchk"> In-bay tidal current field (animated)</label>
+ <label class="wx"><input type="checkbox" id="curchk"> Offshore current arrows (coarse model)</label>
  <label class="wx"><input type="checkbox" id="flowchk"> Wind flow (animated)</label>
  <label class="wx"><input type="checkbox" id="radarchk"> Rain radar (NEXRAD)</label>
  <div id="tbox" style="font-size:11px;margin:3px 0;display:none">
@@ -781,7 +781,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <label><input type="checkbox" id="raceschk" checked> Show added races</label>
  <div id="racelist" style="font-size:11px;color:#555"></div>
  <button id="clrgpx" style="font-size:11px;margin-top:2px">Clear added races</button>
- <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. <b>Current flow</b> blends NOAA tidal-current stations (in-bay) with an ocean model (offshore), tied to the time slider; for exact set/drift also see <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-23 11:05</span></div>
+ <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. <b>Current flow</b> blends NOAA tidal-current stations (in-bay) with an ocean model (offshore), tied to the time slider; for exact set/drift also see <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-23 11:12</span></div>
 </div>
 <script>/* @preserve
  * Leaflet 1.9.4, a JS library for interactive maps. https://leafletjs.com
@@ -1914,7 +1914,7 @@ document.getElementById('curchk').addEventListener('change',async e=>{
 document.getElementById('thr').addEventListener('input',()=>{ setWhen();
   if(windOn()&&WIND) drawWind(); if(curOn()&&CUR) drawCur();
   if(flowOn()&&flowLayer&&WINDFLO) flowLayer.setData(flowData(hour()));
-  if(typeof curFlowLayer!=='undefined'&&curFlowLayer&&CURMODEL) curFlowLayer.setData(curFieldData(hour()));
+  if(typeof curFlowLayer!=='undefined'&&curFlowLayer&&CMASK) curFlowLayer.setData(curFieldData());
   if(typeof gomofsLayer!=='undefined'&&gomofsLayer) gomofsLayer.setParams({time:gomofsTime()});
   if(document.getElementById('coopschk').checked&&coopsLoaded) drawCoopsArrows(); });
 
@@ -2074,7 +2074,7 @@ function loadCoopsPreds(){       // MAX_SLACK events (only series NOAA publishes
         fd:+x.meanFloodDir,ed:+x.meanEbbDir})).filter(o=>!isNaN(o.t)&&!isNaN(o.v))
         .sort((a,b2)=>a.t-b2.t);
       if(coopsOn()) drawCoopsArrows();
-      if(curFlowLayer&&CURMODEL) curFlowLayer.setData(curFieldData(hour()));   // tidal series just arrived -> refresh animated field
+      if(curFlowLayer&&CMASK) curFlowLayer.setData(curFieldData());   // tidal series just arrived -> refresh animated field
     }).catch(()=>{});
   });
 }
@@ -2099,52 +2099,39 @@ document.getElementById('coopschk').addEventListener('change',async e=>{
   else { map.removeLayer(coopsLayer); map.removeLayer(coopsArrows); showTbox(); }
 });
 
-// ---- Animated combined CURRENT FIELD: CO-OPS station tidal (bay, IDW) blended into Open-Meteo ocean model (offshore) ----
-const CURFLO={la1:41.85,la2:40.95,lo1:-72.10,lo2:-70.70,dx:0.06,dy:0.06};
-let CFLATS=[],CFLONS=[],CURMODEL=null,curFlowLayer=null;
+// ---- Animated IN-BAY TIDAL CURRENT FIELD: CO-OPS station vectors (IDW) on a land-masked bay grid (curmask.json) ----
+let CMASK=null, curFlowLayer=null;
 const curFlowOn=()=>document.getElementById('curflowchk').checked;
-function cfCSV(){ CFLATS=[];CFLONS=[];
-  for(let la=CURFLO.la1; la>=CURFLO.la2-1e-9; la-=CURFLO.dy) CFLATS.push(+la.toFixed(3));
-  for(let lo=CURFLO.lo1; lo<=CURFLO.lo2+1e-9; lo+=CURFLO.dx) CFLONS.push(+lo.toFixed(3));
-  const la=[],lo=[]; CFLATS.forEach(y=>CFLONS.forEach(x=>{la.push(y);lo.push(x);}));
-  return {la:la.join(','),lo:lo.join(',')}; }
-async function loadCurModel(){ const g=cfCSV();
-  const u='https://marine-api.open-meteo.com/v1/marine?latitude='+g.la+'&longitude='+g.lo+
-    '&hourly=ocean_current_velocity,ocean_current_direction&forecast_days=2&timezone=UTC';
-  const j=await (await fetch(u)).json(); CURMODEL=Array.isArray(j)?j:[j];
-  if(!TIMES){TIMES=CURMODEL[0].hourly.time; document.getElementById('thr').max=TIMES.length-1;} }
-function curFieldData(h){
-  const NX=CFLONS.length, NY=CFLATS.length, U=[],V=[], tgt=targetMs(), R=0.22;   // R ~13 nm tidal-influence radius
+async function loadCMask(){ if(!CMASK) CMASK=await (await fetch('curmask.json')).json(); return CMASK; }
+function curFieldData(){
+  const g=CMASK; if(!g) return [{header:{},data:[]},{header:{},data:[]}];
+  const NX=g.nx, NY=g.ny, U=new Array(NX*NY).fill(0), V=new Array(NX*NY).fill(0), tgt=targetMs(), R=0.14;  // R ~8 nm
   const st=[];                                    // CO-OPS station vectors at target time (m/s, SET/toward direction)
   (coopsStations||[]).forEach(s=>{ if(!s.series||!s.series.length) return; const c=curAt(s.series,tgt); if(!c) return;
     const spd=Math.abs(c.v)*0.514444, dir=(c.v>=0?c.fd:c.ed); if(isNaN(dir)) return; const r=dir*Math.PI/180;
     st.push({lat:s.lat,lon:s.lng,u:spd*Math.sin(r),v:spd*Math.cos(r)}); });
-  let idx=0;
-  for(let iy=0; iy<NY; iy++){ for(let ix=0; ix<NX; ix++){
-    const la=CFLATS[iy], lo=CFLONS[ix]; const rec=CURMODEL[idx]; let um=0,vm=0;
-    if(rec&&rec.hourly){ const mv=rec.hourly.ocean_current_velocity[h], md=rec.hourly.ocean_current_direction[h];
-      if(mv!=null&&md!=null){ const ms=mv/3.6, mr=md*Math.PI/180; um=ms*Math.sin(mr); vm=ms*Math.cos(mr); } }  // km/h -> m/s, SET dir
-    let wsum=0,ut=0,vt=0,nearest=9;               // inverse-distance blend of nearby tidal stations
-    st.forEach(s=>{ const dyy=la-s.lat, dxx=(lo-s.lon)*Math.cos(la*Math.PI/180), d=Math.hypot(dxx,dyy);
-      if(d<R){ const w=1/(d*d+1e-4); wsum+=w; ut+=w*s.u; vt+=w*s.v; if(d<nearest)nearest=d; } });
-    let u=um,v=vm;
-    if(wsum>0){ ut/=wsum; vt/=wsum; const a=Math.max(0,Math.min(1,1-nearest/R)); u=a*ut+(1-a)*um; v=a*vt+(1-a)*vm; }
-    U.push(u); V.push(v); idx++;
-  }}
+  for(let iy=0; iy<NY; iy++){ const la=g.la1-iy*g.dy;
+    for(let ix=0; ix<NX; ix++){ const idx=iy*NX+ix;
+      if(g.mask[idx]==='1') continue;               // land cell -> velocity stays 0 (no particles cross land)
+      const lo=g.lo1+ix*g.dx; let wsum=0,ut=0,vt=0;
+      st.forEach(s=>{ const dyy=la-s.lat, dxx=(lo-s.lon)*Math.cos(la*Math.PI/180), d=Math.hypot(dxx,dyy);
+        if(d<R){ const w=1/(d*d+1e-4); wsum+=w; ut+=w*s.u; vt+=w*s.v; } });
+      if(wsum>0){ U[idx]=ut/wsum; V[idx]=vt/wsum; }
+    } }
   const hdr=(num,name)=>({parameterUnit:'m.s-1',parameterCategory:2,parameterNumber:num,parameterNumberName:name,
-    nx:NX,ny:NY,lo1:CURFLO.lo1,la1:CURFLO.la1,lo2:CURFLO.lo2,la2:CURFLO.la2,dx:CURFLO.dx,dy:CURFLO.dy,refTime:'',forecastTime:0});
+    nx:NX,ny:NY,lo1:g.lo1,la1:g.la1,lo2:g.lo2,la2:g.la2,dx:g.dx,dy:g.dy,refTime:'',forecastTime:0});
   return [{header:hdr(2,'U-component'),data:U},{header:hdr(3,'V-component'),data:V}];
 }
 document.getElementById('curflowchk').addEventListener('change',async e=>{
   if(e.target.checked){ try{
-      if(!coopsLoaded) await loadCoops();          // station tidal series (markers stay hidden unless Tidal-currents toggle is on)
-      if(!CURMODEL) await loadCurModel();
+      await loadCMask();
+      if(!coopsLoaded) await loadCoops();            // station tidal series (markers stay hidden unless Tidal-currents toggle is on)
       setWhen(); showTbox();
-      curFlowLayer=L.velocityLayer({displayValues:false,data:curFieldData(hour()),
-        maxVelocity:2.0,velocityScale:0.11,lineWidth:2.2,particleMultiplier:1/140,particleAge:90,
+      curFlowLayer=L.velocityLayer({displayValues:false,data:curFieldData(),
+        maxVelocity:1.6,velocityScale:0.12,lineWidth:2.2,particleMultiplier:1/120,particleAge:90,
         colorScale:['#8ec7ff','#00b4d8','#0077b6','#7b2cbf','#e6194b']}).addTo(map);
-      setTimeout(()=>{ if(curFlowLayer&&CURMODEL) curFlowLayer.setData(curFieldData(hour())); },2500);  // let CO-OPS tidal series arrive, then repaint
-    }catch(err){ alert('Current flow unavailable: '+err); e.target.checked=false; } }
+      setTimeout(()=>{ if(curFlowLayer&&CMASK) curFlowLayer.setData(curFieldData()); },2500);  // repaint once CO-OPS series arrive
+    }catch(err){ alert('Current field unavailable: '+err); e.target.checked=false; } }
   else if(curFlowLayer){ map.removeLayer(curFlowLayer); curFlowLayer=null; }
   showTbox(); });
 
