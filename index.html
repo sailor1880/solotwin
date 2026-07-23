@@ -724,7 +724,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <datalist id="coursecodes"></datalist>
  <div id="courseinfo" style="font-size:11px;color:#555;min-height:14px;margin-top:2px"></div>
  <div style="margin-top:2px"><button id="courseclr" style="font-size:11px">Clear course</button>
-   <label style="font-size:11px;margin-left:6px"><input type="checkbox" id="coursekeep"> keep on reload</label></div>
+   <span style="font-size:11px;color:#888;margin-left:6px">stays until cleared &middot; shows in Windy</span></div>
  <hr><b style="font-size:12px">Race marks (manual)</b>
  <label style="font-size:12px"><input type="checkbox" id="markmode"> Place mark (tap map, then name it)</label>
  <label style="font-size:12px"><input type="checkbox" id="coordmode"> Tap map for coordinates</label>
@@ -766,7 +766,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <label><input type="checkbox" id="raceschk" checked> Show added races</label>
  <div id="racelist" style="font-size:11px;color:#555"></div>
  <button id="clrgpx" style="font-size:11px;margin-top:2px">Clear added races</button>
- <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. Current arrows are an <b>ocean model, not tidal</b> &mdash; for tidal set/drift use <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-22 20:25</span></div>
+ <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. Current arrows are an <b>ocean model, not tidal</b> &mdash; for tidal set/drift use <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-23 07:23</span></div>
 </div>
 <script>/* @preserve
  * Leaflet 1.9.4, a JS library for interactive maps. https://leafletjs.com
@@ -2386,8 +2386,7 @@ function drawCourse(code){ const set=COURSESETS[curSetIdx], c=set.courses[code],
   if(pts.length>1) map.fitBounds(pts,{padding:[40,40]});
   persistCourse(code);
 }
-function persistCourse(code){ try{ localStorage.setItem('sa_course',
-  document.getElementById('coursekeep').checked&&code? JSON.stringify({set:curSetIdx,code}):''); }catch(e){} }
+function persistCourse(code){ try{ if(code) localStorage.setItem('sa_course',JSON.stringify({set:curSetIdx,code})); else localStorage.removeItem('sa_course'); }catch(e){} }
 document.getElementById('courseset').addEventListener('focus',loadCourseSets,{once:true});
 document.getElementById('coursepick').addEventListener('focus',loadCourseSets,{once:true});
 document.getElementById('courseset').addEventListener('change',e=>{ fillCodes(+e.target.value);
@@ -2399,9 +2398,8 @@ document.getElementById('coursepick').addEventListener('change',async e=>{ await
   else document.getElementById('courseinfo').innerHTML='<span style="color:#c00">no course "'+code+'" in this set</span>'; });
 document.getElementById('courseclr').addEventListener('click',()=>{ clearCourseLine();
   document.getElementById('coursepick').value=''; document.getElementById('courseinfo').textContent=''; try{localStorage.removeItem('sa_course');}catch(e){} });
-document.getElementById('coursekeep').addEventListener('change',()=>persistCourse(document.getElementById('coursepick').value.trim()));
 (function(){ let s; try{ s=JSON.parse(localStorage.getItem('sa_course')||'null'); }catch(e){}
-  if(s&&s.code){ document.getElementById('coursekeep').checked=true;
+  if(s&&s.code){
     loadCourseSets().then(()=>{ document.getElementById('courseset').value=s.set||0; fillCodes(s.set||0);
       document.getElementById('coursepick').value=s.code; drawCourse(s.code); }); } })();
 

@@ -48,11 +48,24 @@ else windyInit({key:KEY, verbose:false, lat:41.1, lon:-71.3, zoom:9}, windyAPI=>
   try{ (JSON.parse(localStorage.getItem('sa_courses')||'[]')).forEach((c,i)=>{ if(c.on===false) return;
     const col=['#d00','#0a0','#06c','#c60','#909','#0aa'][i%6];
     L.polyline(c.pts,{color:col,weight:3}).bindPopup('Course: '+c.name).addTo(map); }); }catch(e){}
+  // South Bay picked course (from the main-page Course library picker)
+  try{ const pc=JSON.parse(localStorage.getItem('sa_course')||'null');
+    if(pc && pc.code){ Promise.all([fetch('courses.json').then(r=>r.json()),fetch('southbay_marks.json').then(r=>r.json())])
+      .then(([cj,mj])=>{ const set=cj.sets[pc.set||0], M=mj.marks; if(!set) return; const c=set.courses[pc.code]; if(!c) return;
+        const pts=[]; if(set.start) pts.push(set.start);
+        c.seq.forEach(([mk,side])=>{ const m=M[mk]; if(!m) return; pts.push([m.lat,m.lon]);
+          L.circleMarker([m.lat,m.lon],{radius:5,color:'#6a0080',weight:2,fillColor:'#e040fb',fillOpacity:1})
+            .bindTooltip(mk+(side==='fin'?' (finish)':side==='p'?' (port)':' (stbd)'),{direction:'top'}).addTo(map); });
+        const last=c.seq[c.seq.length-1]; if(set.start && !(last&&last[1]==='fin')) pts.push(set.start);
+        L.polyline(pts,{color:'#d500f9',weight:3,opacity:.95}).bindPopup('Course '+pc.code+' &mdash; '+set.club+' &middot; '+(c.dist||'?')+' NM').addTo(map);
+        if(set.start) L.circleMarker(set.start,{radius:6,color:'#fff',weight:2,fillColor:'#22c55e',fillOpacity:1})
+          .bindTooltip('Start: '+set.startArea,{direction:'top'}).addTo(map);
+      }).catch(()=>{}); } }catch(e){}
   if('geolocation' in navigator){ let bm=null,first=true;
     navigator.geolocation.watchPosition(p=>{ const ll=[p.coords.latitude,p.coords.longitude];
       if(!bm){ bm=L.circleMarker(ll,{radius:6,color:'#fff',weight:2,fillColor:'#c1121f',fillOpacity:1}).addTo(map).bindTooltip('You'); }
       else bm.setLatLng(ll); if(first){ map.setView(ll,10); first=false; } }, ()=>{}, {enableHighAccuracy:true,maximumAge:3000}); }
 });
 </script>
-<div style="position:absolute;bottom:2px;right:4px;z-index:9999;font:11px system-ui;color:#bbb">build 2026-07-22 20:25</div>
+<div style="position:absolute;bottom:2px;right:4px;z-index:9999;font:11px system-ui;color:#bbb">build 2026-07-23 07:23</div>
 </body></html>
