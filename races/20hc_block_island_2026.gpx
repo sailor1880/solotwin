@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gpx version="1.1" creator="sailing-assistant" xmlns="http://www.topografix.com/GPX/1/1">
-  <metadata><name>20HC Block Island Race 2026</name><desc>Twenty Hundred Club. Newport<->Block Island, 21.2 NM each way. Marks: USCG Light List 2025.</desc></metadata>
+  <metadata><name>20HC Block Island Race 2026</name><desc>Twenty Hundred Club. Newport to/from Block Island, 21.2 NM each way. Marks: USCG Light List 2025.</desc></metadata>
   <wpt lat="41.49261" lon="-71.33642"><name>G3 Gong SE Rose I (start)</name><sym>Buoy</sym></wpt>
   <wpt lat="41.25731" lon="-71.57593"><name>G1BI Block I North Reef Bell</name><sym>Buoy</sym></wpt>
   <wpt lat="41.20150" lon="-71.59423"><name>R2 Bell New Harbor (Great Salt Pond)</name><sym>Buoy</sym></wpt>
