@@ -716,10 +716,10 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <label><input type="checkbox" id="clubschk"> Clubs &amp; services (&#9733;)</label>
  <button id="bbabtn" style="font-size:11px;margin-top:3px;cursor:pointer;width:100%">Bay events (Better Bay Alliance) &#8599;</button>
  <hr>
- <label style="font-size:12px"><input type="checkbox" id="twinchk" checked> <b>Current race: SOLO/TWIN</b> (hide to focus a loaded race)</label>
- <div style="font-size:12px;margin-bottom:2px"><b>SOLO/TWIN courses</b>
+ <div style="font-size:12px;margin-bottom:2px"><b>SOLO/TWIN race</b>
    <button id="allcourses" style="font-size:11px">all on</button>
-   <button id="nocourses" style="font-size:11px">all off</button></div>
+   <button id="nocourses" style="font-size:11px">all off</button>
+   <div style="color:#888;font-size:11px">on/off = courses + marks + Cox Ledge + finish</div></div>
  <label style="font-size:12px"><input type="checkbox" id="revchk"> Reverse direction (SI 6.3)</label>
  <div id="list"></div>
  <label><input type="checkbox" id="mkchk" checked> Race marks &amp; labels</label>
@@ -777,7 +777,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <label><input type="checkbox" id="raceschk" checked> Show added races</label>
  <div id="racelist" style="font-size:11px;color:#555"></div>
  <button id="clrgpx" style="font-size:11px;margin-top:2px">Clear added races</button>
- <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. <b>Current flow</b> blends NOAA tidal-current stations (in-bay) with an ocean model (offshore), tied to the time slider; for exact set/drift also see <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-23 09:15</span></div>
+ <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. <b>Current flow</b> blends NOAA tidal-current stations (in-bay) with an ocean model (offshore), tied to the time slider; for exact set/drift also see <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-23 10:47</span></div>
 </div>
 <script>/* @preserve
  * Leaflet 1.9.4, a JS library for interactive maps. https://leafletjs.com
@@ -2020,8 +2020,13 @@ document.getElementById('gpschk').addEventListener('change',e=>{
       if(firstFix){ map.setView(ll,13); firstFix=false; }
       else if(document.getElementById('followchk').checked){ map.panTo(ll); }
       recordFix(c);
-    }, err=>{ alert('GPS error: '+err.message+'\n(Location needs an HTTPS page + permission.)');
-       e.target.checked=false; }, {enableHighAccuracy:true,maximumAge:2000,timeout:20000});
+    }, err=>{
+       const msg = err.code===1
+         ? 'Location is blocked. On iPhone fix it in two places:\\n1) Settings > Privacy & Security > Location Services = ON, then scroll to Safari Websites = "While Using".\\n2) Open the site in Safari, tap "aA" at the left of the address bar > Website Settings > Location = Allow.\\nThen reload and tap My position again.'
+         : err.code===3 ? 'Location timed out - try again in the open with a clear view of the sky.'
+         : 'GPS error: '+err.message;
+       alert(msg); e.target.checked=false;
+     }, {enableHighAccuracy:true,maximumAge:2000,timeout:20000});
   } else {
     if(watchId!=null){ navigator.geolocation.clearWatch(watchId); watchId=null; }
     window.removeEventListener('deviceorientation',onOrient,true);
@@ -2131,8 +2136,9 @@ document.getElementById('curflowchk').addEventListener('change',async e=>{
       if(!CURMODEL) await loadCurModel();
       setWhen(); showTbox();
       curFlowLayer=L.velocityLayer({displayValues:false,data:curFieldData(hour()),
-        maxVelocity:2.5,velocityScale:0.02,lineWidth:2,particleMultiplier:1/200,particleAge:60,
+        maxVelocity:2.0,velocityScale:0.11,lineWidth:2.2,particleMultiplier:1/140,particleAge:90,
         colorScale:['#8ec7ff','#00b4d8','#0077b6','#7b2cbf','#e6194b']}).addTo(map);
+      setTimeout(()=>{ if(curFlowLayer&&CURMODEL) curFlowLayer.setData(curFieldData(hour())); },2500);  // let CO-OPS tidal series arrive, then repaint
     }catch(err){ alert('Current flow unavailable: '+err); e.target.checked=false; } }
   else if(curFlowLayer){ map.removeLayer(curFlowLayer); curFlowLayer=null; }
   showTbox(); });
@@ -2207,28 +2213,13 @@ D.courses.forEach(c=>{
 });
 document.getElementById('revchk').addEventListener('change',()=>{ redrawCourses(); redrawImported(); saveView(); });
 
-// ---- Current race (SOLO/TWIN) master show/hide ----
-document.getElementById('twinchk').addEventListener('change',e=>{
-  const on=e.target.checked;
-  document.querySelectorAll('#list input[type=checkbox]').forEach((cb,i)=>{
-    const lyr=courseLayers[D.courses[i].code]; if(!lyr) return;
-    (on && cb.checked)? lyr.addTo(map) : map.removeLayer(lyr);
-  });
-  const sync=(id,layer)=>{ const el=document.getElementById(id); if(!layer||!el) return;
-    (on && el.checked)? layer.addTo(map) : map.removeLayer(layer); };
-  sync('mkchk',markLayer); sync('ezchk',ezLayer); sync('finchk',finLayer); saveView();
-});
 function restoreView(){ let v; try{ v=JSON.parse(localStorage.getItem('sa_view')||'null'); }catch(e){} if(!v) return;
   if(typeof v.rev==='boolean')  document.getElementById('revchk').checked=v.rev;
-  if(typeof v.twin==='boolean') document.getElementById('twinchk').checked=v.twin;
   const on=new Set(v.courses||[]);
   document.querySelectorAll('#list input[type=checkbox]').forEach((cb,i)=>{ cb.checked=on.has(D.courses[i].code); });
   redrawCourses();   // built-in courses only; imported races draw with correct reverse when they load later
-  const twin=document.getElementById('twinchk').checked;
   document.querySelectorAll('#list input[type=checkbox]').forEach((cb,i)=>{
-    const lyr=courseLayers[D.courses[i].code]; (twin&&cb.checked)?lyr.addTo(map):map.removeLayer(lyr); });
-  const sync2=(id,layer)=>{ (twin&&document.getElementById(id).checked)?layer.addTo(map):map.removeLayer(layer); };
-  sync2('mkchk',markLayer); sync2('ezchk',ezLayer); sync2('finchk',finLayer);
+    const lyr=courseLayers[D.courses[i].code]; if(!lyr) return; cb.checked?lyr.addTo(map):map.removeLayer(lyr); });
 }
 restoreView();   // restore the last course selection on load
 ezLayer.addTo(map); finLayer.addTo(map); markLayer.addTo(map);
@@ -2237,19 +2228,23 @@ tog('ezchk',ezLayer); tog('finchk',finLayer); tog('skchk',seamark); tog('mkchk',
 ezpts.forEach(p=>bounds.push(p));
 map.fitBounds(bounds,{padding:[30,30]});
 
-// ---- Toggle ALL courses on/off (per-course boxes still work individually) ----
+// ---- Master all-on/off for the whole SOLO/TWIN race: courses + marks + Cox Ledge + finish (per-item boxes still work individually) ----
 function setAllCourses(on){
   document.querySelectorAll('#list input[type=checkbox]').forEach((cb,i)=>{
-    cb.checked=on; const code=D.courses[i].code;
-    on? courseLayers[code].addTo(map) : map.removeLayer(courseLayers[code]);
+    cb.checked=on; const lyr=courseLayers[D.courses[i].code]; if(!lyr) return;
+    on? lyr.addTo(map) : map.removeLayer(lyr);
+  });
+  [['mkchk',markLayer],['ezchk',ezLayer],['finchk',finLayer]].forEach(([id,layer])=>{
+    const el=document.getElementById(id); if(el) el.checked=on;
+    on? layer.addTo(map) : map.removeLayer(layer);
   });
   saveView();
 }
-function saveView(){ try{   // persist course selection + reverse + current-race (restored on reload; mirrored by windy.html)
+function saveView(){ try{   // persist course selection + reverse (restored on reload; mirrored by windy.html)
   const codes=[];
   document.querySelectorAll('#list input[type=checkbox]').forEach((cb,i)=>{ if(cb.checked) codes.push(D.courses[i].code); });
   localStorage.setItem('sa_view', JSON.stringify({courses:codes,
-    rev:document.getElementById('revchk').checked, twin:document.getElementById('twinchk').checked}));
+    rev:document.getElementById('revchk').checked}));
 }catch(e){} }
 document.getElementById('allcourses').onclick=()=>setAllCourses(true);
 document.getElementById('nocourses').onclick =()=>setAllCourses(false);
@@ -2620,17 +2615,17 @@ const lat2t=(la,z)=>{ const r=la*Math.PI/180; return Math.floor((1-Math.log(Math
 document.getElementById('offlinebtn').addEventListener('click',async ()=>{
   const msg=document.getElementById('offlinemsg');
   if(!('caches' in window)){ msg.textContent='Offline storage not supported in this browser.'; return; }
-  const b=map.getBounds(), z0=Math.round(map.getZoom()), urls=[];
-  for(let z=z0; z<=Math.min(z0+1,14); z++){
+  const b=map.getBounds(), z0=Math.round(map.getZoom()), zMax=Math.min(z0+4,15), urls=[];
+  for(let z=z0; z<=zMax; z++){        // current zoom down through finer detail levels, so zooming in offline still shows chart
     const x0=lon2t(b.getWest(),z),x1=lon2t(b.getEast(),z),y0=lat2t(b.getNorth(),z),y1=lat2t(b.getSouth(),z);
     for(let x=x0;x<=x1;x++) for(let y=y0;y<=y1;y++) urls.push(encTileUrl(x,y,z));
   }
-  if(urls.length>400 && !confirm(urls.length+' chart tiles for this area - big download. Zoom in for a smaller area, or continue?')) return;
+  if(urls.length>800 && !confirm(urls.length+' chart tiles (zoom '+z0+'-'+zMax+') for this area - big download. Zoom IN for a smaller area, or continue?')) return;
   const c=await caches.open('sa-tiles-v1'); let done=0,ok=0;
   msg.textContent='Saving 0/'+urls.length+'...';
   for(const u of urls){ try{ const res=await fetch(u,{mode:'no-cors'}); await c.put(u,res); ok++; }catch(e){}
     if(++done%8===0||done===urls.length) msg.textContent='Saving '+done+'/'+urls.length+'...'; }
-  msg.textContent='Saved '+ok+' ENC tiles offline (areas you browse are cached automatically too)';
+  msg.textContent='Saved '+ok+' ENC tiles (zoom '+z0+'-'+zMax+') offline. Zoom in here works offline now.';
 });
 
 // ---- Aquaculture lease areas: authoritative RI DEM / RIGIS FeatureServer (live, CORS-ok, keyless) ----

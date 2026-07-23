@@ -1,5 +1,5 @@
 /* Sailing Assistant service worker — app shell + ENC/tile + data offline caching */
-const APP='sa-app-v1', TILES='sa-tiles-v1', DATA='sa-data-v1';
+const APP='sa-app-v2', TILES='sa-tiles-v1', DATA='sa-data-v1';
 const SHELL=['./','index.html','windy.html','manifest.webmanifest','icon-192.png','icon-512.png','icon-180.png'];
 
 self.addEventListener('install', e=>{
