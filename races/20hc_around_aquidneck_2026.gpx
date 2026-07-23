@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gpx version="1.1" creator="sailing-assistant" xmlns="http://www.topografix.com/GPX/1/1">
   <metadata><name>20HC Around Aquidneck Race 2026</name><desc>Twenty Hundred Club. Standard course 27.7 NM, counter-clockwise around Aquidneck Island. Start G3 near Hog Island Shoal (start area approx). Marks: USCG Light List 2025.</desc></metadata>
-  <wpt lat="41.63241" lon="-71.27325"><name>Hog Island Shoal (start area)</name><sym>Buoy</sym></wpt>
-  <wpt lat="41.50400" lon="-71.34860"><name>Pell Bridge (center span)</name><sym>Buoy</sym></wpt>
+  <wpt lat="41.63115" lon="-71.27238"><name>Start (btwn Hog I Shoal Lt &amp; Mt Hope Bay Appr Bell)</name><sym>Buoy</sym></wpt>
+  <wpt lat="41.50500" lon="-71.34891"><name>Pell Bridge (center span)</name><sym>Buoy</sym></wpt>
   <wpt lat="41.49992" lon="-71.34582"><name>R12a East Passage</name><sym>Buoy</sym></wpt>
   <wpt lat="41.49451" lon="-71.34468"><name>R12 East Passage Bell (Rose I)</name><sym>Buoy</sym></wpt>
   <wpt lat="41.45754" lon="-71.36639"><name>R6 East Passage Bell</name><sym>Buoy</sym></wpt>
@@ -10,9 +10,11 @@
   <wpt lat="41.45445" lon="-71.24489"><name>G1 Cormorant Reef Bell</name><sym>Buoy</sym></wpt>
   <wpt lat="41.55292" lon="-71.22803"><name>R6 Sakonnet River</name><sym>Buoy</sym></wpt>
   <wpt lat="41.60317" lon="-71.21644"><name>RN12 Sakonnet R (finish)</name><sym>Buoy</sym></wpt>
+  <wpt lat="41.63241" lon="-71.27325"><name>Hog Island Shoal Light (Fl R 6s, LL#18145)</name><sym>Light</sym></wpt>
+  <wpt lat="41.62988" lon="-71.27150"><name>Mount Hope Bay Approach Bell (LL#18140)</name><sym>Buoy</sym></wpt>
   <rte><name>Standard Course (27.7 NM)</name>
-    <rtept lat="41.63241" lon="-71.27325"><name>Hog Island Shoal (start area)</name></rtept>
-    <rtept lat="41.50400" lon="-71.34860"><name>Pell Bridge (center span)</name></rtept>
+    <rtept lat="41.63115" lon="-71.27238"><name>Start (btwn Hog I Shoal Lt &amp; Mt Hope Bay Appr Bell)</name></rtept>
+    <rtept lat="41.50500" lon="-71.34891"><name>Pell Bridge (center span)</name></rtept>
     <rtept lat="41.49992" lon="-71.34582"><name>R12a East Passage</name></rtept>
     <rtept lat="41.49451" lon="-71.34468"><name>R12 East Passage Bell (Rose I)</name></rtept>
     <rtept lat="41.45754" lon="-71.36639"><name>R6 East Passage Bell</name></rtept>

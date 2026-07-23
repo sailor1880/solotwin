@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gpx version="1.1" creator="sailing-assistant" xmlns="http://www.topografix.com/GPX/1/1">
-  <metadata><name>20HC Cuttyhunk Race 2025</name><desc>Twenty Hundred Club Cuttyhunk Race. Marks: USCG Light List 2025. R2 SE of Old Cock = best match Buzzards Bay Lighted Bell Buoy 2 (verify).</desc></metadata>
+  <metadata><name>20HC Cuttyhunk Race 2025</name><desc>Twenty Hundred Club Cuttyhunk Race. Marks: USCG Light List 2025. R2 SE of Old Cock (Buzzards Bay Lighted Bell Buoy 2, LL#16030) = best match Buzzards Bay Lighted Bell Buoy 2 (verify).</desc></metadata>
   <wpt lat="41.49261" lon="-71.33642"><name>G3 Gong (start)</name><sym>Buoy</sym></wpt>
   <wpt lat="41.38334" lon="-71.38930"><name>NB RACON (Narr. Bay Ent.)</name><sym>Buoy</sym></wpt>
   <wpt lat="41.39699" lon="-71.03469"><name>BUZZARDS RACON (Buzzards Bay Ent.)</name><sym>Buoy</sym></wpt>
-  <wpt lat="41.43568" lon="-71.01092"><name>R2 SE of Old Cock</name><sym>Buoy</sym></wpt>
+  <wpt lat="41.43568" lon="-71.01092"><name>R2 SE of Old Cock (Buzzards Bay Lighted Bell Buoy 2, LL#16030)</name><sym>Buoy</sym></wpt>
   <wpt lat="41.43241" lon="-71.36298"><name>Brenton Pt Whistle R2</name><sym>Buoy</sym></wpt>
   <wpt lat="41.43381" lon="-71.34674"><name>Seal Ledge Bell 2A</name><sym>Buoy</sym></wpt>
   <wpt lat="41.44011" lon="-70.92886"><name>RGN MG Middle Ground (finish)</name><sym>Buoy</sym></wpt>
@@ -12,7 +12,7 @@
     <rtept lat="41.49261" lon="-71.33642"><name>G3 Gong (start)</name></rtept>
     <rtept lat="41.38334" lon="-71.38930"><name>NB RACON (Narr. Bay Ent.)</name></rtept>
     <rtept lat="41.39699" lon="-71.03469"><name>BUZZARDS RACON (Buzzards Bay Ent.)</name></rtept>
-    <rtept lat="41.43568" lon="-71.01092"><name>R2 SE of Old Cock</name></rtept>
+    <rtept lat="41.43568" lon="-71.01092"><name>R2 SE of Old Cock (Buzzards Bay Lighted Bell Buoy 2, LL#16030)</name></rtept>
     <rtept lat="41.44011" lon="-70.92886"><name>RGN MG Middle Ground (finish)</name></rtept>
   </rte>
   <rte><name>Course II (23.9 NM)</name>
