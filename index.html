@@ -792,7 +792,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <div style="margin-top:3px;display:flex;gap:4px;flex-wrap:wrap">
    <button id="savetrack" style="font-size:11px">Save track.gpx</button>
    <button id="clrtrack" style="font-size:11px">Clear track</button></div>
- <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. <b>Current flow</b> blends NOAA tidal-current stations (in-bay) with an ocean model (offshore), tied to the time slider; for exact set/drift also see <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-24 15:07</span></div>
+ <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. <b>Current flow</b> blends NOAA tidal-current stations (in-bay) with an ocean model (offshore), tied to the time slider; for exact set/drift also see <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-24 15:11</span></div>
 </div>
 <script>/* @preserve
  * Leaflet 1.9.4, a JS library for interactive maps. https://leafletjs.com
@@ -2539,6 +2539,7 @@ document.getElementById('clubschk').addEventListener('change',e=>{
 // ---- Other races: import GPX -> per-route (course) checkboxes; honors Reverse toggle ----
 let racesRaw=[]; const RKEY='sa_races';
 const RCOL=['#8e44ad','#d35400','#16a085','#2c3e50','#0088aa'];
+const CCOL=['#e6194b','#3cb44b','#4363d8','#f58231','#911eb4','#00b4d8','#f032e6','#7cb342','#e6ab02','#469990','#9a6324','#1f78b4','#b15928','#6a3d9a'];  // per-course colours (automatic)
 let races=[];   // {name,color,bounds,routes:[{name,pts,layer,on}], extra:[layer]}
 const racesOn=()=>document.getElementById('raceschk').checked;
 function revPts(pts){ return (isRev() && pts.length>2) ? [pts[0], ...pts.slice(1,-1).reverse(), pts[pts.length-1]] : pts; }
@@ -2550,9 +2551,9 @@ function buildRace(text,name,idx){
   const nm=el=>{ const x=tag(el,'name')[0]; return x?x.textContent:''; };
   const collect=els=>els.map(p=>{ const la=+p.getAttribute('lat'),lo=+p.getAttribute('lon'); b.push([la,lo]); return [la,lo]; });
   const race={name,color:col,bounds:b,routes:[],extra:[]};
-  const addRoute=(pts,label)=>{ if(pts.length>1){
-    const layer=L.polyline(revPts(pts),{color:col,weight:3}).bindPopup(label||name);
-    race.routes.push({name:label||('course '+(race.routes.length+1)),pts,layer,on:true}); } };
+  const addRoute=(pts,label)=>{ if(pts.length>1){ const rc=CCOL[race.routes.length%CCOL.length];   // each course gets its own colour
+    const layer=L.polyline(revPts(pts),{color:rc,weight:3}).bindPopup(label||name);
+    race.routes.push({name:label||('course '+(race.routes.length+1)),pts,layer,on:true,color:rc}); } };
   tag(xml,'rte').forEach(r=>addRoute(collect(tag(r,'rtept')),nm(r)));
   tag(xml,'trk').forEach(t=>{ let pts=[]; tag(t,'trkseg').forEach(sg=>pts=pts.concat(collect(tag(sg,'trkpt'))));
     if(pts.length>1) race.extra.push(L.polyline(pts,{color:col,weight:2,opacity:.7,dashArray:'4 3'}).bindPopup(nm(t)||name)); });
@@ -2567,7 +2568,7 @@ function applyRaceVisibility(){ const on=racesOn(); races.forEach(r=>{
 function redrawImported(){ races.forEach(r=>r.routes.forEach(rt=>rt.layer.setLatLngs(revPts(rt.pts)))); }
 function renderRaceList(){ const box=document.getElementById('racelist'); box.innerHTML='';
   races.forEach(r=>{ const h=document.createElement('div'); h.style.marginTop='3px';
-    h.innerHTML='<span style="color:'+r.color+'">&#9646;</span> <b>'+r.name+'</b> ';
+    h.innerHTML='<b>'+r.name+'</b> ';
     if(r.routes.length>1){                              // all/none buttons for multi-course races (e.g. Ida Lewis = 20)
       const mk=(txt,val)=>{ const b=document.createElement('button'); b.textContent=txt; b.style.fontSize='10px'; b.style.marginLeft='3px';
         b.onclick=()=>{ r.routes.forEach(rt=>rt.on=val); applyRaceVisibility(); renderRaceList(); }; return b; };
@@ -2581,7 +2582,7 @@ function renderRaceList(){ const box=document.getElementById('racelist'); box.in
     h.appendChild(bX);
     box.appendChild(h);
     r.routes.forEach(rt=>{ const lab=document.createElement('label'); lab.style.display='block'; lab.style.marginLeft='10px';
-      lab.innerHTML='<input type="checkbox" '+(rt.on?'checked':'')+'> '+rt.name;
+      lab.innerHTML='<input type="checkbox" '+(rt.on?'checked':'')+'> <span style="display:inline-block;width:14px;height:0;border-top:3px solid '+(rt.color||'#888')+';vertical-align:middle;margin:0 4px"></span>'+rt.name;
       lab.querySelector('input').addEventListener('change',e=>{ rt.on=e.target.checked; applyRaceVisibility(); });
       box.appendChild(lab); }); }); }
 function addRace(text,name,idx,fit){ try{ const r=buildRace(text,name,idx); races.push(r); applyRaceVisibility();
