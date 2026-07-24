@@ -735,8 +735,12 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <div style="margin-top:2px"><button id="courseclr" style="font-size:11px">Clear course</button>
    <span style="font-size:11px;color:#888;margin-left:6px">stays until cleared &middot; shows in Windy</span></div>
  <hr><b style="font-size:12px">Narragansett Bay races</b> <span style="color:#888;font-size:11px">by yacht club</span>
- <label style="font-size:12px;display:block;margin:2px 0">Load a race:
+ <label style="font-size:12px;display:block;margin:2px 0">Drawn courses:
    <select id="racecat" style="font-size:11px;width:100%"><option value="">&hellip;</option></select></label>
+ <button id="nbbrowse" style="font-size:11px;width:100%;margin:2px 0;cursor:pointer">&#128269; Browse all bay races (live)</button>
+ <label style="font-size:11px"><input type="checkbox" id="nbkeel" checked> keelboat / PHRF / distance only (hide junior)</label>
+ <input id="nbfilter" placeholder="filter by club / name / town" style="display:none;font-size:11px;width:100%;box-sizing:border-box;margin:2px 0">
+ <div id="nblive" style="font-size:11px;max-height:44vh;overflow:auto"></div>
  <label style="font-size:12px;display:block;margin:2px 0">Add your own (GPX):
    <input type="file" id="gpxfile" accept=".gpx,application/gpx+xml" style="font-size:11px;width:100%"></label>
  <label><input type="checkbox" id="raceschk" checked> Show loaded races</label>
@@ -788,7 +792,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <div style="margin-top:3px;display:flex;gap:4px;flex-wrap:wrap">
    <button id="savetrack" style="font-size:11px">Save track.gpx</button>
    <button id="clrtrack" style="font-size:11px">Clear track</button></div>
- <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. <b>Current flow</b> blends NOAA tidal-current stations (in-bay) with an ocean model (offshore), tied to the time slider; for exact set/drift also see <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-23 18:04</span></div>
+ <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. <b>Current flow</b> blends NOAA tidal-current stations (in-bay) with an ocean model (offshore), tied to the time slider; for exact set/drift also see <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-24 15:07</span></div>
 </div>
 <script>/* @preserve
  * Leaflet 1.9.4, a JS library for interactive maps. https://leafletjs.com
@@ -2616,6 +2620,57 @@ document.getElementById('raceschk').addEventListener('change',applyRaceVisibilit
     catch(err){ alert('Could not load '+name+': '+err); }
     e.target.value=''; });
 })();
+
+// ---- Live Narragansett Bay race browser: Clubspot public Parse API (keyless, CORS-open) ----
+const CS_HDR={'X-Parse-Application-Id':'myclubspot2017'};
+async function csQuery(cls,whereObj,extra){
+  const p=new URLSearchParams(Object.assign({where:JSON.stringify(whereObj)},extra||{}));
+  const r=await fetch('https://theclubspot.com/parse/classes/'+cls+'?'+p,{headers:CS_HDR});
+  if(!r.ok) throw new Error('Clubspot '+r.status);
+  return (await r.json()).results||[];
+}
+let NBRACES=null;
+async function browseNB(){
+  const box=document.getElementById('nblive'), filt=document.getElementById('nbfilter');
+  box.textContent='Loading live bay races from Clubspot…';
+  try{
+    if(!NBRACES){ const since=new Date(Date.now()-45*864e5).toISOString();
+      NBRACES=await csQuery('regattas',{state:'RI',startDate:{$gte:{__type:'Date',iso:since}}},
+        {order:'startDate',limit:'250',keys:'name,city,startDate'}); }
+    filt.style.display='block'; renderNB();
+  }catch(e){ box.textContent='Could not reach Clubspot (need internet): '+e.message; }
+}
+const NB_JUNIOR=/opti|\b420\b|c420|i420|laser|ilca|sunfish|sea sprite|snipe|rs aero|df95|skiff|wingfoil|sabot|feva|\btera\b|youth|junior|clinic|team rac|girl power|nat earle|fleet 413|kids|o.?pen skiff|420 regatta/i;
+function renderNB(){
+  const box=document.getElementById('nblive'), f=(document.getElementById('nbfilter').value||'').toLowerCase();
+  const keel=document.getElementById('nbkeel').checked;
+  box.innerHTML='';
+  const list=NBRACES.filter(r=>{ if(keel && NB_JUNIOR.test(r.name||'')) return false;
+    return !f || ((r.name||'')+' '+(r.city||'')).toLowerCase().indexOf(f)>=0; });
+  const hdr=document.createElement('div'); hdr.style.color='#888'; hdr.style.margin='2px 0';
+  hdr.textContent=list.length+(keel?' keelboat/PHRF':'')+' bay races (last 45 days + upcoming) · tap "docs" for NOR/SI/course'; box.appendChild(hdr);
+  const ord={nor:0,sis:1};
+  list.forEach(r=>{ const dt=(r.startDate&&r.startDate.iso||'').slice(0,10);
+    const row=document.createElement('div'); row.style.borderTop='1px solid #eee'; row.style.padding='3px 0';
+    row.innerHTML='<b>'+dt+'</b> '+r.name+' <span style="color:#888">'+(r.city||'')+'</span> ';
+    const b=document.createElement('button'); b.textContent='docs'; b.style.fontSize='10px'; b.style.marginLeft='3px';
+    b.onclick=async()=>{ b.disabled=true; b.textContent='…';
+      try{ const docs=await csQuery('documents',{regattaObject:{__type:'Pointer',className:'regattas',objectId:r.objectId}},{limit:'40'});
+        const dl=document.createElement('div'); dl.style.marginLeft='12px'; const seen={};
+        const uniq=docs.filter(x=>x.URL&&!seen[x.URL]&&(seen[x.URL]=1))
+          .sort((a,c)=>((ord[a.type]===undefined?9:ord[a.type])-(ord[c.type]===undefined?9:ord[c.type])));
+        uniq.forEach(x=>{ const a=document.createElement('a'); a.href=x.URL; a.target='_blank'; a.rel='noopener';
+          a.textContent='['+(x.type==='sis'?'SI':x.type==='nor'?'NOR':(x.type||'doc'))+'] '+(x.name||'document');
+          a.style.display='block'; dl.appendChild(a); });
+        if(!uniq.length) dl.textContent='(no documents posted yet)';
+        row.appendChild(dl); b.remove();
+      }catch(e){ b.textContent='err'; b.disabled=false; }
+    };
+    row.appendChild(b); box.appendChild(row); });
+}
+document.getElementById('nbbrowse').addEventListener('click',browseNB);
+document.getElementById('nbfilter').addEventListener('input',()=>{ if(NBRACES) renderNB(); });
+document.getElementById('nbkeel').addEventListener('change',()=>{ if(NBRACES) renderNB(); });
 
 // ---- NOAA aids (USCG Light List Vol 1, bundled aids.json, lazy-loaded, viewport-culled + canvas) ----
 let AIDS=null; const aidsCanvas=L.canvas({padding:0.3,tolerance:14}), aidsLayer=L.layerGroup();  // tolerance = bigger tap target (mobile single-tap)
