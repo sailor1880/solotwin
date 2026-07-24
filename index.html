@@ -792,7 +792,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <div style="margin-top:3px;display:flex;gap:4px;flex-wrap:wrap">
    <button id="savetrack" style="font-size:11px">Save track.gpx</button>
    <button id="clrtrack" style="font-size:11px">Clear track</button></div>
- <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. <b>Current flow</b> blends NOAA tidal-current stations (in-bay) with an ocean model (offshore), tied to the time slider; for exact set/drift also see <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-24 15:11</span></div>
+ <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. <b>Current flow</b> blends NOAA tidal-current stations (in-bay) with an ocean model (offshore), tied to the time slider; for exact set/drift also see <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-24 15:21</span></div>
 </div>
 <script>/* @preserve
  * Leaflet 1.9.4, a JS library for interactive maps. https://leafletjs.com
@@ -2025,11 +2025,25 @@ function boatIcon(hdg){ const r=(hdg==null||isNaN(hdg))?0:hdg;
       <path d="M15 2 C19 9 19 21 17 27 L13 27 C11 21 11 9 15 2 Z" fill="#c1121f" stroke="#fff" stroke-width="1.5"/>
     </svg>`}); }
 function bestHdg(c){ return (compassHdg!=null)?compassHdg:(c&&c.heading!=null&&!isNaN(c.heading)?c.heading:null); }
+let headingLine=null, lastBoatLL=null;
+function destPoint(lat,lon,brng,distNm){   // point distNm at bearing brng (great-circle)
+  const R=3440.065, d=distNm/R, br=brng*Math.PI/180, la1=lat*Math.PI/180, lo1=lon*Math.PI/180;
+  const la2=Math.asin(Math.sin(la1)*Math.cos(d)+Math.cos(la1)*Math.sin(d)*Math.cos(br));
+  const lo2=lo1+Math.atan2(Math.sin(br)*Math.sin(d)*Math.cos(la1),Math.cos(d)-Math.sin(la1)*Math.sin(la2));
+  return [la2*180/Math.PI, ((lo2*180/Math.PI+540)%360)-180]; }
+function updateHeadingLine(){              // project the boat's heading out to the screen edge
+  const hdg=bestHdg(lastCoords);
+  if(!lastBoatLL || hdg==null || isNaN(hdg)){ if(headingLine){ map.removeLayer(headingLine); headingLine=null; } return; }
+  const b=map.getBounds(), distNm=(map.distance(b.getNorthEast(),b.getSouthWest())/1852)*1.5;  // 1.5x diagonal -> always past the edge
+  const far=destPoint(lastBoatLL[0],lastBoatLL[1],hdg,distNm);
+  if(!headingLine) headingLine=L.polyline([lastBoatLL,far],{color:'#c1121f',weight:2,opacity:.85,dashArray:'8 6',interactive:false}).addTo(map);
+  else headingLine.setLatLngs([lastBoatLL,far]); }
+map.on('moveend zoomend',updateHeadingLine);
 function onOrient(ev){                 // device compass -> point the boat where it's aimed
   let h=null;
   if(ev.webkitCompassHeading!=null) h=ev.webkitCompassHeading;      // iOS: true-north heading
   else if(ev.absolute && ev.alpha!=null) h=(360-ev.alpha)%360;      // others
-  if(h!=null){ compassHdg=h; if(boatMarker) boatMarker.setIcon(boatIcon(h)); }
+  if(h!=null){ compassHdg=h; if(boatMarker){ boatMarker.setIcon(boatIcon(h)); updateHeadingLine(); } }
 }
 async function enableCompass(){        // must be called from a user gesture (the checkbox)
   try{
@@ -2054,6 +2068,7 @@ document.getElementById('gpschk').addEventListener('change',e=>{
       } else { boatMarker.setLatLng(ll).setIcon(boatIcon(hdg)); accCircle.setLatLng(ll).setRadius(c.accuracy); }
       boatMarker.bindTooltip('You'+(c.speed?' '+(c.speed*1.943844).toFixed(1)+' kt':'')+
         (hdg!=null?' '+Math.round(hdg)+'°':''),{direction:'top'});
+      lastBoatLL=ll; updateHeadingLine();
       if(firstFix){ map.setView(ll,13); firstFix=false; }
       else if(document.getElementById('followchk').checked){ map.panTo(ll); }
       recordFix(c);
@@ -2071,6 +2086,7 @@ document.getElementById('gpschk').addEventListener('change',e=>{
     compassHdg=null;
     if(boatMarker){ map.removeLayer(boatMarker); boatMarker=null; }
     if(accCircle){ map.removeLayer(accCircle); accCircle=null; }
+    if(headingLine){ map.removeLayer(headingLine); headingLine=null; } lastBoatLL=null;
   }
 });
 
