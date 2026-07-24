@@ -792,7 +792,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
  <div style="margin-top:3px;display:flex;gap:4px;flex-wrap:wrap">
    <button id="savetrack" style="font-size:11px">Save track.gpx</button>
    <button id="clrtrack" style="font-size:11px">Clear track</button></div>
- <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. <b>Current flow</b> blends NOAA tidal-current stations (in-bay) with an ocean model (offshore), tied to the time slider; for exact set/drift also see <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-24 15:21</span></div>
+ <div class="note">Chart: <b>NOAA ENC Online</b>. Marks: exact <b>USCG Light List 2025</b>. Start = RC line <b>W of Goat Island</b> (approx); finish = Castle Hill Light (cross when it bears 120&deg;M). Wind = Open-Meteo 10&nbsp;m. <b>Current flow</b> blends NOAA tidal-current stations (in-bay) with an ocean model (offshore), tied to the time slider; for exact set/drift also see <a href="https://tidesandcurrents.noaa.gov/" target="_blank">NOAA Tides&amp;Currents</a>. <span style="color:#bbb">&middot; saved items are on <b>this device only</b> &middot; build 2026-07-24 16:45</span></div>
 </div>
 <script>/* @preserve
  * Leaflet 1.9.4, a JS library for interactive maps. https://leafletjs.com
@@ -1868,12 +1868,14 @@ function arrow(deg,color){            // arrow points UP by default -> rotate to
        <polygon points="11,2 7,10 15,10" fill="${color}"/></svg>`});
 }
 const spdColor=s=> s<8?'#2c7fb8': s<16?'#41ab5d': s<22?'#f0a020':'#e6194b';
-const hour=()=>+document.getElementById('thr').value;
+const hour=()=>+document.getElementById('thr').value;   // slider = hours from NOW (0 = now)
+function idxAt(times,tgt){ if(!times||!times.length) return 0; let b=0,bd=1/0;   // nearest index in a forecast time array to an absolute time
+  for(let k=0;k<times.length;k++){ const d=Math.abs(Date.parse(times[k]+'Z')-tgt); if(d<bd){bd=d;b=k;} } return b; }
 function mapTZ(){ const lon=map.getCenter().lng;   // local zone from where the map is centered
   return lon>-67.5?'America/Halifax': lon>-82.5?'America/New_York': lon>-97.5?'America/Chicago':
          lon>-112.5?'America/Denver':'America/Los_Angeles'; }
 function setWhen(){ const el=document.getElementById('when'); if(!el) return;
-  const t=(typeof TIMES!=='undefined'&&TIMES)? new Date(Date.parse(TIMES[hour()]+'Z')) : new Date(Date.now()+hour()*3600000);
+  const t=new Date(targetMs());
   const utc=t.toISOString().slice(0,16).replace('T',' ');
   let loc; try{ loc=t.toLocaleTimeString('en-US',{timeZone:mapTZ(),hour:'2-digit',minute:'2-digit',hour12:true,timeZoneName:'short'}); }
   catch(e){ loc=t.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:true}); }
@@ -1885,7 +1887,7 @@ async function loadWind(){
   const j=await (await fetch(u)).json(); WIND=Array.isArray(j)?j:[j];
   TIMES=WIND[0].hourly.time; document.getElementById('thr').max=TIMES.length-1;
 }
-function drawWind(){ windLayer.clearLayers(); const h=hour();
+function drawWind(){ windLayer.clearLayers(); const h=idxAt(WIND[0]&&WIND[0].hourly&&WIND[0].hourly.time,targetMs());
   WIND.forEach((w,i)=>{ if(!w.hourly) return; const s=w.hourly.wind_speed_10m[h], d=w.hourly.wind_direction_10m[h];
     if(s==null) return;
     L.marker(PTS[i],{icon:arrow((d+180)%360,spdColor(s)),keyboard:false})
@@ -1896,7 +1898,7 @@ async function loadWindH(){            // HRRR (NCEP 3km CONUS) via Open-Meteo, 
     '&hourly=wind_speed_10m,wind_direction_10m&wind_speed_unit=kn&models=ncep_hrrr_conus&forecast_days=2&timezone=UTC';
   const j=await (await fetch(u)).json(); WINDH=Array.isArray(j)?j:[j];
   if(!TIMES && WINDH[0] && WINDH[0].hourly){ TIMES=WINDH[0].hourly.time; document.getElementById('thr').max=TIMES.length-1; } }
-function drawWindH(){ windhLayer.clearLayers(); const h=hour();
+function drawWindH(){ windhLayer.clearLayers(); const h=idxAt(WINDH[0]&&WINDH[0].hourly&&WINDH[0].hourly.time,targetMs());
   WINDH.forEach((w,i)=>{ if(!w.hourly) return; const s=w.hourly.wind_speed_10m[h], d=w.hourly.wind_direction_10m[h];
     if(s==null) return;
     L.marker(PTS[i],{icon:arrow((d+180)%360,spdColor(s)),keyboard:false})
@@ -1907,7 +1909,7 @@ async function loadCur(){
     '&hourly=ocean_current_velocity,ocean_current_direction&forecast_days=2&timezone=UTC';
   const j=await (await fetch(u)).json(); CUR=Array.isArray(j)?j:[j];
   if(!TIMES){TIMES=CUR[0].hourly.time; document.getElementById('thr').max=TIMES.length-1;} }
-function drawCur(){ curLayer.clearLayers(); const h=hour();
+function drawCur(){ curLayer.clearLayers(); const h=idxAt(CUR[0]&&CUR[0].hourly&&CUR[0].hourly.time,targetMs());
   CUR.forEach((w,i)=>{ if(!w.hourly) return; const v=w.hourly.ocean_current_velocity[h], d=w.hourly.ocean_current_direction[h];
     if(v==null||v===0) return; const kn=v*0.539957;
     L.marker(PTS[i],{icon:arrow(d,'#7b2cbf'),keyboard:false})
@@ -1945,7 +1947,7 @@ document.getElementById('curchk').addEventListener('change',async e=>{
   else map.removeLayer(curLayer); showTbox(); });
 document.getElementById('thr').addEventListener('input',()=>{ setWhen();
   if(windOn()&&WIND) drawWind(); if(windhOn()&&WINDH) drawWindH(); if(curOn()&&CUR) drawCur();
-  if(flowOn()&&flowLayer&&WINDFLO) flowLayer.setData(flowData(hour()));
+  if(flowOn()&&flowLayer&&WINDFLO) flowLayer.setData(flowData());
   if(typeof curFlowLayer!=='undefined'&&curFlowLayer&&CMASK) curFlowLayer.setData(curFieldData());
   if(typeof gomofsLayer!=='undefined'&&gomofsLayer) gomofsLayer.setParams({time:gomofsTime()});
   if(document.getElementById('coopschk').checked&&coopsLoaded) drawCoopsArrows(); });
@@ -1967,7 +1969,8 @@ async function loadFlow(){
   const j=await (await fetch(u)).json(); WINDFLO=Array.isArray(j)?j:[j];
   if(!TIMES){TIMES=WINDFLO[0].hourly.time; document.getElementById('thr').max=TIMES.length-1;}
 }
-function flowData(h){
+function flowData(){
+  const h=idxAt(WINDFLO[0]&&WINDFLO[0].hourly&&WINDFLO[0].hourly.time,targetMs());
   const NX=FLOLONS.length, NY=FLOLATS.length, u=[],v=[];
   WINDFLO.forEach(rec=>{
     const s=rec.hourly?rec.hourly.wind_speed_10m[h]:null, d=rec.hourly?rec.hourly.wind_direction_10m[h]:null;
@@ -1980,7 +1983,7 @@ function flowData(h){
 }
 document.getElementById('flowchk').addEventListener('change',async e=>{
   if(e.target.checked){ try{ if(!WINDFLO) await loadFlow(); setWhen();
-      flowLayer=L.velocityLayer({displayValues:false,data:flowData(hour()),
+      flowLayer=L.velocityLayer({displayValues:false,data:flowData(),
         maxVelocity:18,velocityScale:0.005,lineWidth:1.8,particleMultiplier:1/220,
         colorScale:['#8ec7ff','#4aa3ff','#3cb44b','#f0a020','#e6194b']}).addTo(map);
     }catch(err){ alert('Wind flow failed: '+err); e.target.checked=false; } }
@@ -2024,7 +2027,8 @@ function boatIcon(hdg){ const r=(hdg==null||isNaN(hdg))?0:hdg;
    `<svg width="30" height="30" viewBox="0 0 30 30" style="transform:rotate(${r}deg)">
       <path d="M15 2 C19 9 19 21 17 27 L13 27 C11 21 11 9 15 2 Z" fill="#c1121f" stroke="#fff" stroke-width="1.5"/>
     </svg>`}); }
-function bestHdg(c){ return (compassHdg!=null)?compassHdg:(c&&c.heading!=null&&!isNaN(c.heading)?c.heading:null); }
+function cogOK(c){ return c && c.heading!=null && !isNaN(c.heading) && (c.speed==null || c.speed>=0.3); }  // GPS course valid only when moving (~0.6+ kt)
+function bestHdg(c){ return cogOK(c) ? c.heading : (compassHdg!=null?compassHdg:null); }   // prefer GPS COG; compass only as fallback at rest
 let headingLine=null, lastBoatLL=null;
 function destPoint(lat,lon,brng,distNm){   // point distNm at bearing brng (great-circle)
   const R=3440.065, d=distNm/R, br=brng*Math.PI/180, la1=lat*Math.PI/180, lo1=lon*Math.PI/180;
@@ -2043,7 +2047,7 @@ function onOrient(ev){                 // device compass -> point the boat where
   let h=null;
   if(ev.webkitCompassHeading!=null) h=ev.webkitCompassHeading;      // iOS: true-north heading
   else if(ev.absolute && ev.alpha!=null) h=(360-ev.alpha)%360;      // others
-  if(h!=null){ compassHdg=h; if(boatMarker){ boatMarker.setIcon(boatIcon(h)); updateHeadingLine(); } }
+  if(h!=null){ compassHdg=h; if(boatMarker){ boatMarker.setIcon(boatIcon(bestHdg(lastCoords))); updateHeadingLine(); } }  // COG wins when moving
 }
 async function enableCompass(){        // must be called from a user gesture (the checkbox)
   try{
@@ -2067,7 +2071,7 @@ document.getElementById('gpschk').addEventListener('change',e=>{
         accCircle=L.circle(ll,{radius:c.accuracy,color:'#c1121f',weight:1,fillOpacity:0.07}).addTo(map);
       } else { boatMarker.setLatLng(ll).setIcon(boatIcon(hdg)); accCircle.setLatLng(ll).setRadius(c.accuracy); }
       boatMarker.bindTooltip('You'+(c.speed?' '+(c.speed*1.943844).toFixed(1)+' kt':'')+
-        (hdg!=null?' '+Math.round(hdg)+'°':''),{direction:'top'});
+        (hdg!=null?' '+Math.round(hdg)+'° '+(cogOK(c)?'COG':'compass'):''),{direction:'top'});
       lastBoatLL=ll; updateHeadingLine();
       if(firstFix){ map.setView(ll,13); firstFix=false; }
       else if(document.getElementById('followchk').checked){ map.panTo(ll); }
@@ -2095,7 +2099,7 @@ const coopsLayer=L.layerGroup(), coopsArrows=L.layerGroup();
 let coopsLoaded=false, coopsStations=[];
 const coopsOn=()=>document.getElementById('coopschk').checked;
 const curColor=s=> s<0.5?'#00b4d8': s<1?'#0077b6': s<2?'#7b2cbf':'#e6194b';
-function targetMs(){ return (typeof TIMES!=='undefined'&&TIMES)?Date.parse(TIMES[hour()]+'Z'):(Date.now()+hour()*3600000); }
+function targetMs(){ return Date.now()+hour()*3600000; }   // slider hours-from-now -> absolute time (all layers map their own data to this)
 function ymd(d){ return ''+d.getUTCFullYear()+String(d.getUTCMonth()+1).padStart(2,'0')+String(d.getUTCDate()).padStart(2,'0'); }
 async function loadCoops(){
   const u='https://api.tidesandcurrents.noaa.gov/mdapi/prod/webapi/stations.json?type=currentpredictions';
